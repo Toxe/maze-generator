@@ -137,13 +137,11 @@ void visit(Maze& maze, const Maze::Coordinates coords)
     maze.set_node_visited(coords);
 
     for (const auto dir : maze.random_directions()) {
-        Maze::Coordinates new_coords{maze.coords_in_direction(coords, dir)};
+        Maze::Coordinates next_coords{maze.coords_in_direction(coords, dir)};
 
-        if (maze.valid_coords(new_coords)) {
-            if (!maze.node_visited(new_coords)) {
-                maze.clear_walls(coords, new_coords, dir);
-                visit(maze, new_coords);
-            }
+        if (maze.valid_coords(next_coords) && !maze.node_visited(next_coords)) {
+            maze.clear_walls(coords, next_coords, dir);
+            visit(maze, next_coords);
         }
     }
 }
