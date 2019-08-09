@@ -51,8 +51,8 @@ public:
     }
 
 private:
-    int width_;
-    int height_;
+    const int width_;
+    const int height_;
     std::vector<unsigned char> nodes_;
 
     const Maze::WallFlags wall_in_direction_[4] = { Maze::WallFlags::North, Maze::WallFlags::East, Maze::WallFlags::South, Maze::WallFlags::West };
