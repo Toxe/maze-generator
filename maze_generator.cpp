@@ -28,7 +28,9 @@ public:
     Maze(const int width, const int height)
         : width_{width},
           height_{height},
-          nodes_(width * height, static_cast<Node>(WallFlags::North) | static_cast<Node>(WallFlags::East) | static_cast<Node>(WallFlags::South) | static_cast<Node>(WallFlags::West)) {}
+          nodes_(width * height, static_cast<Node>(WallFlags::North) | static_cast<Node>(WallFlags::East) | static_cast<Node>(WallFlags::South) | static_cast<Node>(WallFlags::West)),
+          random_device_(),
+          random_generator_(random_device_()) {}
 
     int width() const { return width_; }
     int height() const { return height_; }
@@ -53,10 +55,19 @@ public:
         node(dest) &= ~(static_cast<Node>(dest_wall));
     }
 
+    std::vector<Directions> random_directions() {
+        std::vector<Directions> directions{Directions::North, Directions::East, Directions::South, Directions::West};
+        std::shuffle(directions.begin(), directions.end(), random_generator_);
+        return directions;
+    }
+
 private:
     const int width_;
     const int height_;
     std::vector<Node> nodes_;
+
+    std::random_device random_device_;
+    std::mt19937 random_generator_;
 
     const WallFlags wall_in_direction_[4] = { WallFlags::North, WallFlags::East, WallFlags::South, WallFlags::West };
     const Directions opposite_direction_[4] = { Directions::South, Directions::West, Directions::North, Directions::East };
@@ -101,14 +112,9 @@ void print(Maze& maze)
 
 void visit(Maze& maze, const Maze::Coordinates coords)
 {
-    std::random_device rd;
-    std::mt19937 g(rd());
-    std::vector<Maze::Directions> directions{Maze::Directions::North, Maze::Directions::East, Maze::Directions::South, Maze::Directions::West};
-    std::shuffle(directions.begin(), directions.end(), g);
-
     maze.set_node_visited(coords);
 
-    for (const auto dir : directions) {
+    for (const auto dir : maze.random_directions()) {
         Maze::Coordinates new_coords{maze.coords_in_direction(coords, dir)};
 
         if (maze.valid_coords(new_coords)) {
