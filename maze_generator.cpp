@@ -4,6 +4,8 @@
 #include <vector>
 
 class Maze {
+    using Node = unsigned char;
+
 public:
     enum class Directions {
         North = 0,
@@ -26,7 +28,7 @@ public:
     Maze(const int width, const int height)
         : width_{width},
           height_{height},
-          nodes_(width * height, static_cast<unsigned char>(Maze::WallFlags::North) | static_cast<unsigned char>(Maze::WallFlags::East) | static_cast<unsigned char>(Maze::WallFlags::South) | static_cast<unsigned char>(Maze::WallFlags::West)) {}
+          nodes_(width * height, static_cast<Node>(Maze::WallFlags::North) | static_cast<Node>(Maze::WallFlags::East) | static_cast<Node>(Maze::WallFlags::South) | static_cast<Node>(Maze::WallFlags::West)) {}
 
     int width() const { return width_; }
     int height() const { return height_; }
@@ -41,19 +43,19 @@ public:
     bool node_visited(const Maze::Coordinates coords) const { return nodes_[coords.y * width_ + coords.x] & 0b10000; }
     void set_node_visited(const Maze::Coordinates coords) { nodes_[coords.y * width_ + coords.x] |= 0b10000; }
 
-    bool has_wall(const Maze::Coordinates coords, Maze::WallFlags wall) const { return nodes_[coords.y * width_ + coords.x] & static_cast<unsigned char>(wall); }
+    bool has_wall(const Maze::Coordinates coords, Maze::WallFlags wall) const { return nodes_[coords.y * width_ + coords.x] & static_cast<Node>(wall); }
 
     void clear_walls(const Maze::Coordinates orig, const Maze::Coordinates dest, Maze::Directions dir) {
         const Maze::WallFlags orig_wall = wall_in_direction_[static_cast<int>(dir)];
         const Maze::WallFlags dest_wall = wall_in_direction_[static_cast<int>(opposite_direction_[static_cast<int>(dir)])];
-        nodes_[orig.y * width_ + orig.x] &= ~(static_cast<unsigned char>(orig_wall));
-        nodes_[dest.y * width_ + dest.x] &= ~(static_cast<unsigned char>(dest_wall));
+        nodes_[orig.y * width_ + orig.x] &= ~(static_cast<Node>(orig_wall));
+        nodes_[dest.y * width_ + dest.x] &= ~(static_cast<Node>(dest_wall));
     }
 
 private:
     const int width_;
     const int height_;
-    std::vector<unsigned char> nodes_;
+    std::vector<Node> nodes_;
 
     const Maze::WallFlags wall_in_direction_[4] = { Maze::WallFlags::North, Maze::WallFlags::East, Maze::WallFlags::South, Maze::WallFlags::West };
     const Maze::Directions opposite_direction_[4] = { Maze::Directions::South, Maze::Directions::West, Maze::Directions::North, Maze::Directions::East };
