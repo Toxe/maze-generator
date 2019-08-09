@@ -11,13 +11,19 @@ struct Node {
     bool has_west_wall = true;
 };
 
+struct Coordinates {
+    int x, y;
+};
+
 class Maze {
 public:
     Maze(const int width, const int height) : width_{width}, height_{height}, nodes_(width * height) {}
 
     int width() const { return width_; }
     int height() const { return height_; }
-    Node* node(const int x, const int y) { return &nodes_[y * width_ + x]; }
+
+    Node* node(const Coordinates coords) { return &nodes_[coords.y * width_ + coords.x]; }
+    bool valid_coords(const Coordinates coords) const { return coords.x >= 0 && coords.y >= 0 && coords.x < width_ && coords.y < height_; }
 
 private:
     int width_;
@@ -25,36 +31,33 @@ private:
     std::vector<Node> nodes_;
 };
 
-void coord_in_direction(const int x, const int y, const int dir, int* nx, int* ny)
+Coordinates coords_in_direction(const Coordinates coords, const int dir)
 {
-    *nx = x;
-    *ny = y;
+    Coordinates new_coords{coords};
 
     switch (dir) {
     case 0:
-        *nx = x;
-        *ny = y - 1;
+        new_coords.y = coords.y - 1;
         break;
     case 1:
-        *nx = x + 1;
-        *ny = y;
+        new_coords.x = coords.x + 1;
         break;
     case 2:
-        *nx = x;
-        *ny = y + 1;
+        new_coords.y = coords.y + 1;
         break;
     case 3:
-        *nx = x - 1;
-        *ny = y;
+        new_coords.x = coords.x - 1;
         break;
     }
+
+    return new_coords;
 }
 
 void print(Maze& maze)
 {
     for (int y = 0; y < maze.height(); ++y) {
         for (int x = 0; x < maze.width(); ++x) {
-            const Node* node = maze.node(x, y);
+            const Node* node = maze.node({x, y});
 
             if (node->has_north_wall)
                 std::cout << "+--";
@@ -65,7 +68,7 @@ void print(Maze& maze)
         std::cout << "+" << std::endl;
 
         for (int x = 0; x < maze.width(); ++x) {
-            const Node* node = maze.node(x, y);
+            const Node* node = maze.node({x, y});
 
             if (node->has_west_wall)
                 std::cout << "|  ";
@@ -80,7 +83,7 @@ void print(Maze& maze)
 
         if (y == maze.height() - 1) {
             for (int x = 0; x < maze.width(); ++x) {
-                const Node* node = maze.node(x, y);
+                const Node* node = maze.node({x, y});
 
                 if (node->has_south_wall)
                     std::cout << "+--";
@@ -93,23 +96,22 @@ void print(Maze& maze)
     }
 }
 
-void visit(Maze& maze, const int x, const int y)
+void visit(Maze& maze, const Coordinates coords)
 {
     std::random_device rd;
     std::mt19937 g(rd());
     std::vector<int> directions{0, 1, 2, 3};
     std::shuffle(directions.begin(), directions.end(), g);
 
-    Node* current_node = maze.node(x, y);
+    Node* current_node = maze.node(coords);
 
     current_node->visited = true;
 
-    for (auto dir : directions) {
-        int nx, ny;
-        coord_in_direction(x, y, dir, &nx, &ny);
+    for (const auto dir : directions) {
+        Coordinates new_coords{coords_in_direction(coords, dir)};
 
-        if (nx >= 0 && ny >= 0 && nx < maze.width() && ny < maze.height()) {
-            Node* next_node = maze.node(nx, ny);
+        if (maze.valid_coords(new_coords)) {
+            Node* next_node = maze.node(new_coords);
 
             if (!next_node->visited) {
                 switch (dir) {
@@ -131,7 +133,7 @@ void visit(Maze& maze, const int x, const int y)
                     break;
                 }
 
-                visit(maze, nx, ny);
+                visit(maze, new_coords);
             }
 
         }
@@ -145,6 +147,6 @@ int main()
 
     Maze maze(num_cols, num_rows);
 
-    visit(maze, 0, 0);
+    visit(maze, {0, 0});
     print(maze);
 }
