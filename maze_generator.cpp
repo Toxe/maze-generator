@@ -4,26 +4,13 @@
 #include <vector>
 
 class Maze {
+public:
     using Node = unsigned char;
 
-public:
-    enum class Directions {
-        North = 0,
-        East,
-        South,
-        West
-    };
+    enum class Directions { North = 0, East, South, West };
+    enum class WallFlags { North = 0b0001, East = 0b0010, South = 0b0100, West = 0b1000 };
 
-    enum class WallFlags {
-        North = 0b0001,
-        East  = 0b0010,
-        South = 0b0100,
-        West  = 0b1000
-    };
-
-    struct Coordinates {
-        int x, y;
-    };
+    struct Coordinates { int x, y; };
 
     Maze(const int width, const int height)
         : width_{width},
