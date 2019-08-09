@@ -11,6 +11,13 @@ struct Node {
     bool has_west_wall = true;
 };
 
+enum class Directions {
+    North,
+    East,
+    South,
+    West
+};
+
 struct Coordinates {
     int x, y;
 };
@@ -31,21 +38,21 @@ private:
     std::vector<Node> nodes_;
 };
 
-Coordinates coords_in_direction(const Coordinates coords, const int dir)
+Coordinates coords_in_direction(const Coordinates coords, const Directions dir)
 {
     Coordinates new_coords{coords};
 
     switch (dir) {
-    case 0:
+    case Directions::North:
         new_coords.y = coords.y - 1;
         break;
-    case 1:
+    case Directions::East:
         new_coords.x = coords.x + 1;
         break;
-    case 2:
+    case Directions::South:
         new_coords.y = coords.y + 1;
         break;
-    case 3:
+    case Directions::West:
         new_coords.x = coords.x - 1;
         break;
     }
@@ -100,7 +107,7 @@ void visit(Maze& maze, const Coordinates coords)
 {
     std::random_device rd;
     std::mt19937 g(rd());
-    std::vector<int> directions{0, 1, 2, 3};
+    std::vector<Directions> directions{Directions::North, Directions::East, Directions::South, Directions::West};
     std::shuffle(directions.begin(), directions.end(), g);
 
     Node* current_node = maze.node(coords);
@@ -115,19 +122,19 @@ void visit(Maze& maze, const Coordinates coords)
 
             if (!next_node->visited) {
                 switch (dir) {
-                case 0:
+                case Directions::North:
                     current_node->has_north_wall = false;
                     next_node->has_south_wall = false;
                     break;
-                case 1:
+                case Directions::East:
                     current_node->has_east_wall = false;
                     next_node->has_west_wall = false;
                     break;
-                case 2:
+                case Directions::South:
                     current_node->has_south_wall = false;
                     next_node->has_north_wall = false;
                     break;
-                case 3:
+                case Directions::West:
                     current_node->has_west_wall = false;
                     next_node->has_east_wall = false;
                     break;
