@@ -21,10 +21,6 @@ struct Coordinates {
     int x, y;
 };
 
-const WallFlags wall_in_direction[] = { WallFlags::North, WallFlags::East, WallFlags::South, WallFlags::West };
-const Directions opposite_direction[] = { Directions::South, Directions::West, Directions::North, Directions::East };
-const Coordinates direction_coords_offset[] = { Coordinates{0, -1}, Coordinates{1, 0}, Coordinates{0, 1}, Coordinates{-1, 0} };
-
 class Maze {
 public:
     Maze(const int width, const int height)
@@ -38,7 +34,7 @@ public:
     bool valid_coords(const Coordinates coords) const { return coords.x >= 0 && coords.y >= 0 && coords.x < width_ && coords.y < height_; }
 
     Coordinates coords_in_direction(const Coordinates coords, const Directions dir) {
-        const Coordinates offset{direction_coords_offset[static_cast<int>(dir)]};
+        const Coordinates offset{direction_coords_offset_[static_cast<int>(dir)]};
         return Coordinates{coords.x + offset.x, coords.y + offset.y};
     }
 
@@ -48,8 +44,8 @@ public:
     bool has_wall(const Coordinates coords, WallFlags wall) const { return nodes_[coords.y * width_ + coords.x] & static_cast<unsigned char>(wall); }
 
     void clear_walls(const Coordinates orig, const Coordinates dest, Directions dir) {
-        const WallFlags orig_wall = wall_in_direction[static_cast<int>(dir)];
-        const WallFlags dest_wall = wall_in_direction[static_cast<int>(opposite_direction[static_cast<int>(dir)])];
+        const WallFlags orig_wall = wall_in_direction_[static_cast<int>(dir)];
+        const WallFlags dest_wall = wall_in_direction_[static_cast<int>(opposite_direction_[static_cast<int>(dir)])];
         nodes_[orig.y * width_ + orig.x] &= ~(static_cast<unsigned char>(orig_wall));
         nodes_[dest.y * width_ + dest.x] &= ~(static_cast<unsigned char>(dest_wall));
     }
@@ -58,6 +54,10 @@ private:
     int width_;
     int height_;
     std::vector<unsigned char> nodes_;
+
+    const WallFlags wall_in_direction_[4] = { WallFlags::North, WallFlags::East, WallFlags::South, WallFlags::West };
+    const Directions opposite_direction_[4] = { Directions::South, Directions::West, Directions::North, Directions::East };
+    const Coordinates direction_coords_offset_[4] = { Coordinates{0, -1}, Coordinates{1, 0}, Coordinates{0, 1}, Coordinates{-1, 0} };
 };
 
 void print(Maze& maze)
