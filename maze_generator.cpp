@@ -3,19 +3,18 @@
 #include <random>
 #include <vector>
 
-struct Node {
-    bool visited = false;
-    bool has_north_wall = true;
-    bool has_east_wall = true;
-    bool has_south_wall = true;
-    bool has_west_wall = true;
-};
-
 enum class Directions {
-    North,
+    North = 0,
     East,
     South,
     West
+};
+
+enum class WallFlags {
+    North = 0b0001,
+    East  = 0b0010,
+    South = 0b0100,
+    West  = 0b1000
 };
 
 struct Coordinates {
@@ -24,18 +23,30 @@ struct Coordinates {
 
 class Maze {
 public:
-    Maze(const int width, const int height) : width_{width}, height_{height}, nodes_(width * height) {}
+    Maze(const int width, const int height)
+        : width_{width},
+          height_{height},
+          nodes_(width * height, static_cast<unsigned char>(WallFlags::North) | static_cast<unsigned char>(WallFlags::East) | static_cast<unsigned char>(WallFlags::South) | static_cast<unsigned char>(WallFlags::West)) {}
 
     int width() const { return width_; }
     int height() const { return height_; }
 
-    Node* node(const Coordinates coords) { return &nodes_[coords.y * width_ + coords.x]; }
     bool valid_coords(const Coordinates coords) const { return coords.x >= 0 && coords.y >= 0 && coords.x < width_ && coords.y < height_; }
+
+    bool node_visited(const Coordinates coords) const { return nodes_[coords.y * width_ + coords.x] & 0b10000; }
+    void set_node_visited(const Coordinates coords) { nodes_[coords.y * width_ + coords.x] |= 0b10000; }
+
+    bool has_wall(const Coordinates coords, WallFlags wall) const { return nodes_[coords.y * width_ + coords.x] & static_cast<unsigned char>(wall); }
+
+    void clear_walls(const Coordinates orig, const Coordinates dest, WallFlags orig_wall, WallFlags dest_wall) {
+        nodes_[orig.y * width_ + orig.x] &= ~(static_cast<unsigned char>(orig_wall));
+        nodes_[dest.y * width_ + dest.x] &= ~(static_cast<unsigned char>(dest_wall));
+    }
 
 private:
     int width_;
     int height_;
-    std::vector<Node> nodes_;
+    std::vector<unsigned char> nodes_;
 };
 
 Coordinates coords_in_direction(const Coordinates coords, const Directions dir)
@@ -64,9 +75,7 @@ void print(Maze& maze)
 {
     for (int y = 0; y < maze.height(); ++y) {
         for (int x = 0; x < maze.width(); ++x) {
-            const Node* node = maze.node({x, y});
-
-            if (node->has_north_wall)
+            if (maze.has_wall({x, y}, WallFlags::North))
                 std::cout << "+--";
             else
                 std::cout << "+  ";
@@ -75,24 +84,19 @@ void print(Maze& maze)
         std::cout << "+" << std::endl;
 
         for (int x = 0; x < maze.width(); ++x) {
-            const Node* node = maze.node({x, y});
-
-            if (node->has_west_wall)
+            if (maze.has_wall({x, y}, WallFlags::West))
                 std::cout << "|  ";
             else
                 std::cout << "   ";
 
             if (x == maze.width() - 1)
-                if (node->has_east_wall)
+                if (maze.has_wall({x, y}, WallFlags::East))
                     std::cout << "|" << std::endl;
         }
 
-
         if (y == maze.height() - 1) {
             for (int x = 0; x < maze.width(); ++x) {
-                const Node* node = maze.node({x, y});
-
-                if (node->has_south_wall)
+                if (maze.has_wall({x, y}, WallFlags::South))
                     std::cout << "+--";
                 else
                     std::cout << "+  ";
@@ -110,39 +114,30 @@ void visit(Maze& maze, const Coordinates coords)
     std::vector<Directions> directions{Directions::North, Directions::East, Directions::South, Directions::West};
     std::shuffle(directions.begin(), directions.end(), g);
 
-    Node* current_node = maze.node(coords);
-
-    current_node->visited = true;
+    maze.set_node_visited(coords);
 
     for (const auto dir : directions) {
         Coordinates new_coords{coords_in_direction(coords, dir)};
 
         if (maze.valid_coords(new_coords)) {
-            Node* next_node = maze.node(new_coords);
-
-            if (!next_node->visited) {
+            if (!maze.node_visited(new_coords)) {
                 switch (dir) {
                 case Directions::North:
-                    current_node->has_north_wall = false;
-                    next_node->has_south_wall = false;
+                    maze.clear_walls(coords, new_coords, WallFlags::North, WallFlags::South);
                     break;
                 case Directions::East:
-                    current_node->has_east_wall = false;
-                    next_node->has_west_wall = false;
+                    maze.clear_walls(coords, new_coords, WallFlags::East, WallFlags::West);
                     break;
                 case Directions::South:
-                    current_node->has_south_wall = false;
-                    next_node->has_north_wall = false;
+                    maze.clear_walls(coords, new_coords, WallFlags::South, WallFlags::North);
                     break;
                 case Directions::West:
-                    current_node->has_west_wall = false;
-                    next_node->has_east_wall = false;
+                    maze.clear_walls(coords, new_coords, WallFlags::West, WallFlags::East);
                     break;
                 }
 
                 visit(maze, new_coords);
             }
-
         }
     }
 }
