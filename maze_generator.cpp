@@ -21,6 +21,9 @@ struct Coordinates {
     int x, y;
 };
 
+const WallFlags wall_in_direction[] = { WallFlags::North, WallFlags::East, WallFlags::South, WallFlags::West };
+const Directions opposite_direction[] = { Directions::South, Directions::West, Directions::North, Directions::East };
+
 class Maze {
 public:
     Maze(const int width, const int height)
@@ -38,7 +41,9 @@ public:
 
     bool has_wall(const Coordinates coords, WallFlags wall) const { return nodes_[coords.y * width_ + coords.x] & static_cast<unsigned char>(wall); }
 
-    void clear_walls(const Coordinates orig, const Coordinates dest, WallFlags orig_wall, WallFlags dest_wall) {
+    void clear_walls(const Coordinates orig, const Coordinates dest, Directions dir) {
+        const WallFlags orig_wall = wall_in_direction[static_cast<int>(dir)];
+        const WallFlags dest_wall = wall_in_direction[static_cast<int>(opposite_direction[static_cast<int>(dir)])];
         nodes_[orig.y * width_ + orig.x] &= ~(static_cast<unsigned char>(orig_wall));
         nodes_[dest.y * width_ + dest.x] &= ~(static_cast<unsigned char>(dest_wall));
     }
@@ -121,21 +126,7 @@ void visit(Maze& maze, const Coordinates coords)
 
         if (maze.valid_coords(new_coords)) {
             if (!maze.node_visited(new_coords)) {
-                switch (dir) {
-                case Directions::North:
-                    maze.clear_walls(coords, new_coords, WallFlags::North, WallFlags::South);
-                    break;
-                case Directions::East:
-                    maze.clear_walls(coords, new_coords, WallFlags::East, WallFlags::West);
-                    break;
-                case Directions::South:
-                    maze.clear_walls(coords, new_coords, WallFlags::South, WallFlags::North);
-                    break;
-                case Directions::West:
-                    maze.clear_walls(coords, new_coords, WallFlags::West, WallFlags::East);
-                    break;
-                }
-
+                maze.clear_walls(coords, new_coords, dir);
                 visit(maze, new_coords);
             }
         }
