@@ -40,16 +40,17 @@ public:
         return Coordinates{coords.x + offset.x, coords.y + offset.y};
     }
 
-    bool node_visited(const Coordinates coords) const { return nodes_[coords.y * width_ + coords.x] & 0b10000; }
-    void set_node_visited(const Coordinates coords) { nodes_[coords.y * width_ + coords.x] |= 0b10000; }
+    Node& node(const Coordinates coords) { return nodes_[coords.y * width_ + coords.x]; };
+    bool node_visited(const Coordinates coords) { return node(coords) & 0b10000; }
+    void set_node_visited(const Coordinates coords) { node(coords) |= 0b10000; }
 
-    bool has_wall(const Coordinates coords, WallFlags wall) const { return nodes_[coords.y * width_ + coords.x] & static_cast<Node>(wall); }
+    bool has_wall(const Coordinates coords, WallFlags wall) { return node(coords) & static_cast<Node>(wall); }
 
     void clear_walls(const Coordinates orig, const Coordinates dest, Directions dir) {
         const WallFlags orig_wall = wall_in_direction_[static_cast<int>(dir)];
         const WallFlags dest_wall = wall_in_direction_[static_cast<int>(opposite_direction_[static_cast<int>(dir)])];
-        nodes_[orig.y * width_ + orig.x] &= ~(static_cast<Node>(orig_wall));
-        nodes_[dest.y * width_ + dest.x] &= ~(static_cast<Node>(dest_wall));
+        node(orig) &= ~(static_cast<Node>(orig_wall));
+        node(dest) &= ~(static_cast<Node>(dest_wall));
     }
 
 private:
