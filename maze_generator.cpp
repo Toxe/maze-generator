@@ -30,7 +30,8 @@ public:
           height_{height},
           nodes_(width * height, static_cast<Node>(WallFlags::North) | static_cast<Node>(WallFlags::East) | static_cast<Node>(WallFlags::South) | static_cast<Node>(WallFlags::West)),
           random_device_(),
-          random_generator_(random_device_()) {}
+          random_generator_(random_device_()),
+          random_dist_{0, 23} {}
 
     int width() const { return width_; }
     int height() const { return height_; }
@@ -42,23 +43,18 @@ public:
         return Coordinates{coords.x + offset.x, coords.y + offset.y};
     }
 
+    const std::vector<Directions>& random_directions() { return all_possible_random_directions[random_dist_(random_generator_)]; }
+
     Node& node(const Coordinates coords) { return nodes_[coords.y * width_ + coords.x]; };
     bool node_visited(const Coordinates coords) { return node(coords) & 0b10000; }
     void set_node_visited(const Coordinates coords) { node(coords) |= 0b10000; }
 
     bool has_wall(const Coordinates coords, WallFlags wall) { return node(coords) & static_cast<Node>(wall); }
-
     void clear_walls(const Coordinates orig, const Coordinates dest, Directions dir) {
         const WallFlags orig_wall = wall_in_direction_[static_cast<int>(dir)];
         const WallFlags dest_wall = wall_in_direction_[static_cast<int>(opposite_direction_[static_cast<int>(dir)])];
         node(orig) &= ~(static_cast<Node>(orig_wall));
         node(dest) &= ~(static_cast<Node>(dest_wall));
-    }
-
-    std::vector<Directions> random_directions() {
-        std::vector<Directions> directions{Directions::North, Directions::East, Directions::South, Directions::West};
-        std::shuffle(directions.begin(), directions.end(), random_generator_);
-        return directions;
     }
 
 private:
@@ -68,10 +64,36 @@ private:
 
     std::random_device random_device_;
     std::mt19937 random_generator_;
+    std::uniform_int_distribution<> random_dist_;
 
     const WallFlags wall_in_direction_[4] = { WallFlags::North, WallFlags::East, WallFlags::South, WallFlags::West };
     const Directions opposite_direction_[4] = { Directions::South, Directions::West, Directions::North, Directions::East };
     const Coordinates direction_coords_offset_[4] = { Coordinates{0, -1}, Coordinates{1, 0}, Coordinates{0, 1}, Coordinates{-1, 0} };
+    const std::vector<std::vector<Directions>> all_possible_random_directions = {
+        {Directions::North, Directions::East,  Directions::South, Directions::West},
+        {Directions::North, Directions::East,  Directions::West,  Directions::South},
+        {Directions::North, Directions::South, Directions::East,  Directions::West},
+        {Directions::North, Directions::South, Directions::West,  Directions::East},
+        {Directions::North, Directions::West,  Directions::East,  Directions::South},
+        {Directions::North, Directions::West,  Directions::South, Directions::East},
+        {Directions::East,  Directions::North, Directions::South, Directions::West},
+        {Directions::East,  Directions::North, Directions::West,  Directions::South},
+        {Directions::East,  Directions::South, Directions::North, Directions::West},
+        {Directions::East,  Directions::South, Directions::West,  Directions::North},
+        {Directions::East,  Directions::West,  Directions::North, Directions::South},
+        {Directions::East,  Directions::West,  Directions::South, Directions::North},
+        {Directions::South, Directions::North, Directions::East,  Directions::West},
+        {Directions::South, Directions::North, Directions::West,  Directions::East},
+        {Directions::South, Directions::East,  Directions::North, Directions::West},
+        {Directions::South, Directions::East,  Directions::West,  Directions::North},
+        {Directions::South, Directions::West,  Directions::North, Directions::East},
+        {Directions::South, Directions::West,  Directions::East,  Directions::North},
+        {Directions::West,  Directions::North, Directions::East,  Directions::South},
+        {Directions::West,  Directions::North, Directions::South, Directions::East},
+        {Directions::West,  Directions::East,  Directions::North, Directions::South},
+        {Directions::West,  Directions::East,  Directions::South, Directions::North},
+        {Directions::West,  Directions::South, Directions::North, Directions::East},
+        {Directions::West,  Directions::South, Directions::East,  Directions::North}};
 };
 
 void print(Maze& maze)
