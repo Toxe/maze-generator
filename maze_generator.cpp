@@ -99,37 +99,21 @@ private:
 void print(Maze& maze)
 {
     for (int y = 0; y < maze.height(); ++y) {
-        for (int x = 0; x < maze.width(); ++x) {
-            if (maze.has_wall({x, y}, Maze::WallFlags::North))
-                std::cout << "+--";
-            else
-                std::cout << "+  ";
-        }
+        for (int x = 0; x < maze.width(); ++x)
+            std::cout << (maze.has_wall({x, y}, Maze::WallFlags::North) ? "+--" : "+  ");
 
-        std::cout << "+" << std::endl;
+        std::cout << "+" << "\n";
 
-        for (int x = 0; x < maze.width(); ++x) {
-            if (maze.has_wall({x, y}, Maze::WallFlags::West))
-                std::cout << "|  ";
-            else
-                std::cout << "   ";
+        for (int x = 0; x < maze.width(); ++x)
+            std::cout << (maze.has_wall({x, y}, Maze::WallFlags::West) ? "|  " : "   ");
 
-            if (x == maze.width() - 1)
-                if (maze.has_wall({x, y}, Maze::WallFlags::East))
-                    std::cout << "|" << std::endl;
-        }
-
-        if (y == maze.height() - 1) {
-            for (int x = 0; x < maze.width(); ++x) {
-                if (maze.has_wall({x, y}, Maze::WallFlags::South))
-                    std::cout << "+--";
-                else
-                    std::cout << "+  ";
-            }
-
-            std::cout << "+" << std::endl;
-        }
+        std::cout << "|" << "\n";
     }
+
+    for (int x = 0; x < maze.width(); ++x)
+        std::cout << "+--";
+
+    std::cout << "+" << "\n";
 }
 
 void visit(Maze& maze, const Maze::Coordinates coords)
