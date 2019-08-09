@@ -23,6 +23,7 @@ struct Coordinates {
 
 const WallFlags wall_in_direction[] = { WallFlags::North, WallFlags::East, WallFlags::South, WallFlags::West };
 const Directions opposite_direction[] = { Directions::South, Directions::West, Directions::North, Directions::East };
+const Coordinates direction_coords_offset[] = { Coordinates{0, -1}, Coordinates{1, 0}, Coordinates{0, 1}, Coordinates{-1, 0} };
 
 class Maze {
 public:
@@ -35,6 +36,11 @@ public:
     int height() const { return height_; }
 
     bool valid_coords(const Coordinates coords) const { return coords.x >= 0 && coords.y >= 0 && coords.x < width_ && coords.y < height_; }
+
+    Coordinates coords_in_direction(const Coordinates coords, const Directions dir) {
+        const Coordinates offset{direction_coords_offset[static_cast<int>(dir)]};
+        return Coordinates{coords.x + offset.x, coords.y + offset.y};
+    }
 
     bool node_visited(const Coordinates coords) const { return nodes_[coords.y * width_ + coords.x] & 0b10000; }
     void set_node_visited(const Coordinates coords) { nodes_[coords.y * width_ + coords.x] |= 0b10000; }
@@ -53,28 +59,6 @@ private:
     int height_;
     std::vector<unsigned char> nodes_;
 };
-
-Coordinates coords_in_direction(const Coordinates coords, const Directions dir)
-{
-    Coordinates new_coords{coords};
-
-    switch (dir) {
-    case Directions::North:
-        new_coords.y = coords.y - 1;
-        break;
-    case Directions::East:
-        new_coords.x = coords.x + 1;
-        break;
-    case Directions::South:
-        new_coords.y = coords.y + 1;
-        break;
-    case Directions::West:
-        new_coords.x = coords.x - 1;
-        break;
-    }
-
-    return new_coords;
-}
 
 void print(Maze& maze)
 {
@@ -122,7 +106,7 @@ void visit(Maze& maze, const Coordinates coords)
     maze.set_node_visited(coords);
 
     for (const auto dir : directions) {
-        Coordinates new_coords{coords_in_direction(coords, dir)};
+        Coordinates new_coords{maze.coords_in_direction(coords, dir)};
 
         if (maze.valid_coords(new_coords)) {
             if (!maze.node_visited(new_coords)) {
