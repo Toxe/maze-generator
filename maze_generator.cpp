@@ -119,10 +119,7 @@ void visit(Maze& maze, const Maze::Coordinates coords)
 
 int main()
 {
-    constexpr int num_rows = 10;
-    constexpr int num_cols = 10;
-
-    Maze maze(num_cols, num_rows);
+    Maze maze(20, 20);
 
     visit(maze, {0, 0});
     print(maze);
