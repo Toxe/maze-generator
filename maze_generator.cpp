@@ -30,7 +30,7 @@ public:
         return Coordinates{coords.x + offset.x, coords.y + offset.y};
     }
 
-    const std::vector<Directions>& random_directions() { return all_possible_random_directions[random_dist_(random_generator_)]; }
+    const Directions* random_directions() { return all_possible_random_directions[random_dist_(random_generator_)]; }
 
     Node& node(const Coordinates coords) { return nodes_[coords.y * width_ + coords.x]; };
     bool node_visited(const Coordinates coords) { return node(coords) & 0b10000; }
@@ -56,7 +56,7 @@ private:
     const WallFlags wall_in_direction_[4] = { WallFlags::North, WallFlags::East, WallFlags::South, WallFlags::West };
     const Directions opposite_direction_[4] = { Directions::South, Directions::West, Directions::North, Directions::East };
     const Coordinates direction_coords_offset_[4] = { Coordinates{0, -1}, Coordinates{1, 0}, Coordinates{0, 1}, Coordinates{-1, 0} };
-    const std::vector<std::vector<Directions>> all_possible_random_directions = {
+    const Directions all_possible_random_directions[24][4] = {
         {Directions::North, Directions::East,  Directions::South, Directions::West},
         {Directions::North, Directions::East,  Directions::West,  Directions::South},
         {Directions::North, Directions::South, Directions::East,  Directions::West},
@@ -83,6 +83,14 @@ private:
         {Directions::West,  Directions::South, Directions::East,  Directions::North}};
 };
 
+struct StackNode {
+    StackNode(const Maze::Coordinates c, const Maze::Directions* d) : coords{c}, check_directions{d}, rnd_idx{0} {}
+
+    const Maze::Coordinates coords;
+    const Maze::Directions* check_directions;
+    int rnd_idx;
+};
+
 void print(Maze& maze)
 {
     for (int y = 0; y < maze.height(); ++y) {
@@ -103,16 +111,35 @@ void print(Maze& maze)
     std::cout << "+" << "\n";
 }
 
-void visit(Maze& maze, const Maze::Coordinates coords)
+void generate(Maze& maze, const Maze::Coordinates starting_point)
 {
-    maze.set_node_visited(coords);
+    std::vector<StackNode> stack;
 
-    for (const auto dir : maze.random_directions()) {
-        Maze::Coordinates next_coords{maze.coords_in_direction(coords, dir)};
+    maze.set_node_visited(starting_point);
+    stack.emplace_back(starting_point, maze.random_directions());
 
-        if (maze.valid_coords(next_coords) && !maze.node_visited(next_coords)) {
-            maze.clear_walls(coords, next_coords, dir);
-            visit(maze, next_coords);
+    while (!stack.empty()) {
+        StackNode& current_node = stack.back();
+
+        if (current_node.rnd_idx < 4) {
+            bool keep_checking = true;
+
+            while (keep_checking && current_node.rnd_idx < 4) {
+                const auto dir = current_node.check_directions[current_node.rnd_idx];
+                ++current_node.rnd_idx;
+
+                Maze::Coordinates next_coords{maze.coords_in_direction(current_node.coords, dir)};
+
+                if (maze.valid_coords(next_coords) && !maze.node_visited(next_coords)) {
+                    maze.clear_walls(current_node.coords, next_coords, dir);
+                    maze.set_node_visited(next_coords);
+
+                    stack.emplace_back(next_coords, maze.random_directions());
+                    keep_checking = false;
+                }
+            }
+        } else {
+            stack.pop_back();
         }
     }
 }
@@ -121,6 +148,6 @@ int main()
 {
     Maze maze(20, 20);
 
-    visit(maze, {0, 0});
+    generate(maze, {0, 0});
     print(maze);
 }
