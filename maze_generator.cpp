@@ -12,13 +12,16 @@ public:
 
     struct Coordinates { int x, y; };
 
-    Maze(const int width, const int height)
+    Maze(const int width, const int height, const int seed = -1)
         : width_{width},
           height_{height},
           nodes_(static_cast<std::size_t>(width * height), static_cast<Node>(WallFlags::North) | static_cast<Node>(WallFlags::East) | static_cast<Node>(WallFlags::South) | static_cast<Node>(WallFlags::West)),
           random_device_(),
           random_generator_(random_device_()),
-          random_dist_{0, 23} {}
+          random_dist_{0, 23} {
+              if (seed >= 0)
+                  random_generator_.seed(seed);
+          }
 
     int width() const { return width_; }
     int height() const { return height_; }
