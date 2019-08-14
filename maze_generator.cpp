@@ -32,7 +32,7 @@ public:
 
     const Directions* random_directions() { return all_possible_random_directions[random_dist_(random_generator_)]; }
 
-    Node& node(const Coordinates coords) { return nodes_[static_cast<std::size_t>(coords.y * width_ + coords.x)]; };
+    Node& node(const Coordinates coords) { return nodes_[static_cast<std::size_t>(coords.y * width_ + coords.x)]; }
     bool node_visited(const Coordinates coords) { return node(coords) & 0b10000; }
     void set_node_visited(const Coordinates coords) { node(coords) |= 0b10000; }
 
