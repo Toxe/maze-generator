@@ -1,6 +1,11 @@
+#include "clipp.h"
 #include <algorithm>
+#include <cstdlib>
+#include <filesystem>
 #include <iostream>
+#include <optional>
 #include <random>
+#include <tuple>
 #include <vector>
 
 class Maze {
@@ -94,6 +99,8 @@ struct StackNode {
     int rnd_idx;
 };
 
+enum class OutputFormat { Text, RGB };
+
 void print(Maze& maze)
 {
     for (int y = 0; y < maze.height(); ++y) {
@@ -147,9 +154,67 @@ void generate(Maze& maze, const Maze::Coordinates starting_point)
     }
 }
 
-int main()
+bool str_ends_with(const std::string_view s, const std::string_view look_for)
 {
-    Maze maze(20, 20);
+    if (look_for.size() > s.size())
+        return false;
+
+    return s.find(look_for) == (s.size() - look_for.size());
+}
+
+std::optional<OutputFormat> get_output_format(const std::string& filename)
+{
+    if (str_ends_with(filename, ".maze"))
+        return OutputFormat::Text;
+    else if (str_ends_with(filename, ".raw"))
+        return OutputFormat::RGB;
+
+    return std::nullopt;
+}
+
+void show_usage_and_exit(const clipp::group& cli, const char* argv0, const char* error_message = nullptr)
+{
+    if (error_message)
+        std::cout << error_message << "\n\n";
+
+    std::string progname{std::filesystem::path{argv0}.filename().string()};
+    std::cout << clipp::make_man_page(cli, progname).append_section("EXAMPLE", "        " + progname + " 20 20 test.maze") << std::endl;
+
+    std::exit(1);
+}
+
+std::tuple<int, int, int, std::string, OutputFormat> eval_args(int argc, char* argv[])
+{
+    int seed = -1;
+    int width, height;
+    std::string filename;
+
+    auto cli = (
+        (clipp::option("-s", "--seed") & clipp::integer("seed", seed)) % "random seed (0 or bigger)",
+        clipp::integer("width", width)                                 % "maze width",
+        clipp::integer("height", height)                               % "maze height",
+        clipp::value("filename", filename)                             % "output filename (has to end in .maze or .raw)"
+    );
+
+    if (!clipp::parse(argc, argv, cli))
+        show_usage_and_exit(cli, argv[0]);
+
+    if (width < 1 || height < 1)
+        show_usage_and_exit(cli, argv[0], "Error: Maze width and height need to be at least 1");
+
+    auto output_format = get_output_format(filename);
+
+    if (!output_format.has_value())
+        show_usage_and_exit(cli, argv[0], "Error: Output filename has to end in either .maze or .raw");
+
+    return std::make_tuple(seed, width, height, filename, *output_format);
+}
+
+int main(int argc, char* argv[])
+{
+    auto [seed, width, height, filename, output_format] = eval_args(argc, argv);
+
+    Maze maze(width, height, seed);
 
     generate(maze, {0, 0});
     print(maze);
