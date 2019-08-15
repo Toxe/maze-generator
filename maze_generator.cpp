@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <cstdlib>
 #include <filesystem>
+#include <fstream>
 #include <iostream>
 #include <optional>
 #include <random>
@@ -101,24 +102,57 @@ struct StackNode {
 
 enum class OutputFormat { Text, RGB };
 
-void print(Maze& maze)
+void output(Maze& maze, std::string filename, OutputFormat output_format)
 {
-    for (int y = 0; y < maze.height(); ++y) {
+    std::ofstream out{filename, std::ofstream::binary};
+
+    if (output_format == OutputFormat::Text) {
+        out << "width=" << maze.width() << "\n";
+        out << "height=" << maze.height() << "\n";
+
+        for (int y = 0; y < maze.height(); ++y) {
+            for (int x = 0; x < maze.width(); ++x)
+                out << (maze.has_wall({x, y}, Maze::WallFlags::North) ? "##" : "# ");
+
+            out << "#" << "\n";
+
+            for (int x = 0; x < maze.width(); ++x)
+                out << (maze.has_wall({x, y}, Maze::WallFlags::West) ? "# " : "  ");
+
+            out << "#" << "\n";
+        }
+
         for (int x = 0; x < maze.width(); ++x)
-            std::cout << (maze.has_wall({x, y}, Maze::WallFlags::North) ? "+--" : "+  ");
+            out << "##";
 
-        std::cout << "+" << "\n";
+        out << "#" << "\n";
+    } else {
+        const unsigned char black = 0x00;
+        const unsigned char white = 0xff;
+
+        for (int y = 0; y < maze.height(); ++y) {
+            for (int x = 0; x < maze.width(); ++x)
+                if (maze.has_wall({x, y}, Maze::WallFlags::North))
+                    out << white << white;
+                else
+                    out << white << black;
+
+            out << white;
+
+            for (int x = 0; x < maze.width(); ++x)
+                if (maze.has_wall({x, y}, Maze::WallFlags::West))
+                    out << white << black;
+                else
+                    out << black << black;
+
+            out << white;
+        }
 
         for (int x = 0; x < maze.width(); ++x)
-            std::cout << (maze.has_wall({x, y}, Maze::WallFlags::West) ? "|  " : "   ");
+            out << white << white;
 
-        std::cout << "|" << "\n";
+        out << white;
     }
-
-    for (int x = 0; x < maze.width(); ++x)
-        std::cout << "+--";
-
-    std::cout << "+" << "\n";
 }
 
 void generate(Maze& maze, const Maze::Coordinates starting_point)
@@ -217,5 +251,5 @@ int main(int argc, char* argv[])
     Maze maze(width, height, seed);
 
     generate(maze, {0, 0});
-    print(maze);
+    output(maze, filename, output_format);
 }
