@@ -2,3 +2,5 @@ build*
 .vscode
 .vs
 CMakeSettings.json
+*.maze
+*.raw
