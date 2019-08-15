@@ -102,7 +102,7 @@ struct StackNode {
 
 enum class OutputFormat { Text, RGB };
 
-void output(Maze& maze, std::string filename, OutputFormat output_format)
+void output(Maze& maze, std::string filename, OutputFormat output_format, int zoom = 1)
 {
     std::ofstream out{filename, std::ofstream::binary};
 
@@ -131,27 +131,51 @@ void output(Maze& maze, std::string filename, OutputFormat output_format)
         const unsigned char white = 0xff;
 
         for (int y = 0; y < maze.height(); ++y) {
-            for (int x = 0; x < maze.width(); ++x)
-                if (maze.has_wall({x, y}, Maze::WallFlags::North))
-                    out << white << white;
-                else
-                    out << white << black;
+            for (int r = 0; r < zoom; ++r) {
+                for (int x = 0; x < maze.width(); ++x) {
+                    if (maze.has_wall({x, y}, Maze::WallFlags::North)) {
+                        for (int z = 0; z < zoom; ++z)
+                            out << white << white;
+                    } else {
+                        for (int z = 0; z < zoom; ++z)
+                            out << white;
 
-            out << white;
+                        for (int z = 0; z < zoom; ++z)
+                            out << black;
+                    }
+                }
 
-            for (int x = 0; x < maze.width(); ++x)
-                if (maze.has_wall({x, y}, Maze::WallFlags::West))
-                    out << white << black;
-                else
-                    out << black << black;
+                for (int z = 0; z < zoom; ++z)
+                    out << white;
+            }
 
-            out << white;
+            for (int r = 0; r < zoom; ++r) {
+                for (int x = 0; x < maze.width(); ++x) {
+                    if (maze.has_wall({x, y}, Maze::WallFlags::West)) {
+                        for (int z = 0; z < zoom; ++z)
+                            out << white;
+
+                        for (int z = 0; z < zoom; ++z)
+                            out << black;
+                    } else {
+                        for (int z = 0; z < zoom; ++z)
+                            out << black << black;
+                    }
+                }
+
+                for (int z = 0; z < zoom; ++z)
+                    out << white;
+            }
         }
 
-        for (int x = 0; x < maze.width(); ++x)
-            out << white << white;
+        for (int r = 0; r < zoom; ++r) {
+            for (int x = 0; x < maze.width(); ++x)
+                for (int z = 0; z < zoom; ++z)
+                    out << white << white;
 
-        out << white;
+            for (int z = 0; z < zoom; ++z)
+                out << white;
+        }
     }
 }
 
@@ -217,14 +241,16 @@ void show_usage_and_exit(const clipp::group& cli, const char* argv0, const char*
     std::exit(1);
 }
 
-std::tuple<int, int, int, std::string, OutputFormat> eval_args(int argc, char* argv[])
+std::tuple<int, int, int, std::string, OutputFormat, int> eval_args(int argc, char* argv[])
 {
     int seed = -1;
+    int zoom = 1;
     int width, height;
     std::string filename;
 
     auto cli = (
         (clipp::option("-s", "--seed") & clipp::integer("seed", seed)) % "random seed (0 or bigger)",
+        (clipp::option("-z", "--zoom") & clipp::integer("zoom", zoom)) % "pixel zoom factor for .raw files (default: 1)",
         clipp::integer("width", width)                                 % "maze width",
         clipp::integer("height", height)                               % "maze height",
         clipp::value("filename", filename)                             % "output filename (has to end in .maze or .raw)"
@@ -241,15 +267,18 @@ std::tuple<int, int, int, std::string, OutputFormat> eval_args(int argc, char* a
     if (!output_format.has_value())
         show_usage_and_exit(cli, argv[0], "Error: Output filename has to end in either .maze or .raw");
 
-    return std::make_tuple(seed, width, height, filename, *output_format);
+    if (zoom < 1)
+        zoom = 1;
+
+    return std::make_tuple(seed, width, height, filename, *output_format, zoom);
 }
 
 int main(int argc, char* argv[])
 {
-    auto [seed, width, height, filename, output_format] = eval_args(argc, argv);
+    auto [seed, width, height, filename, output_format, zoom] = eval_args(argc, argv);
 
     Maze maze(width, height, seed);
 
     generate(maze, {0, 0});
-    output(maze, filename, output_format);
+    output(maze, filename, output_format, zoom);
 }
