@@ -142,8 +142,9 @@ void output(Maze& maze, const std::string& filename, OutputFormat output_format,
             // info in Raw mode always goes to stdout
             std::cout << "width=" << maze.width() << "\n";
             std::cout << "height=" << maze.height() << "\n";
-            std::cout << "image_width=" << (zoom * (2 * maze.width() + 1)) << "\n";
-            std::cout << "image_height=" << (zoom * (2 * maze.height() + 1)) << "\n";
+            std::cout << "image width=" << (zoom * (2 * maze.width() + 1)) << "\n";
+            std::cout << "image height=" << (zoom * (2 * maze.height() + 1)) << "\n";
+            std::cout << "image format=1 byte per pixel, grayscale\n";
         }
 
         const unsigned char black = 0x00;
