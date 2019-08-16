@@ -24,8 +24,8 @@ public:
           random_device_(),
           random_generator_(random_device_()),
           random_dist_{0, 23} {
-              if (seed >= 0)
-                  random_generator_.seed(seed);
+              seed_ = (seed >= 0) ? seed : random_device_();
+              random_generator_.seed(seed_);
           }
 
     int width() const { return width_; }
@@ -52,12 +52,15 @@ public:
         node(dest) &= ~(static_cast<Node>(dest_wall));
     }
 
+    std::random_device::result_type seed() const { return seed_; }
+
 private:
     const int width_;
     const int height_;
     std::vector<Node> nodes_;
 
     std::random_device random_device_;
+    std::random_device::result_type seed_;
     std::mt19937 random_generator_;
     std::uniform_int_distribution<> random_dist_;
 
@@ -119,6 +122,7 @@ void output(Maze& maze, const std::string& filename, OutputFormat output_format,
         if (show_info) {
             out << "width=" << maze.width() << "\n";
             out << "height=" << maze.height() << "\n";
+            out << "seed=" << maze.seed() << "\n";
         }
 
         for (int y = 0; y < maze.height(); ++y) {
@@ -142,6 +146,7 @@ void output(Maze& maze, const std::string& filename, OutputFormat output_format,
             // info in Raw mode always goes to stdout
             std::cout << "width=" << maze.width() << "\n";
             std::cout << "height=" << maze.height() << "\n";
+            std::cout << "seed=" << maze.seed() << "\n";
             std::cout << "image width=" << (zoom * (2 * maze.width() + 1)) << "\n";
             std::cout << "image height=" << (zoom * (2 * maze.height() + 1)) << "\n";
             std::cout << "image format=1 byte per pixel, grayscale\n";
@@ -200,6 +205,7 @@ void output(Maze& maze, const std::string& filename, OutputFormat output_format,
         if (show_info) {
             out << "width=" << maze.width() << "\n";
             out << "height=" << maze.height() << "\n";
+            out << "seed=" << maze.seed() << "\n";
         }
 
         for (int y = 0; y < maze.height(); ++y) {
@@ -227,6 +233,7 @@ void output(Maze& maze, const std::string& filename, OutputFormat output_format,
         if (show_info) {
             out << "width=" << maze.width() << "\n";
             out << "height=" << maze.height() << "\n";
+            out << "seed=" << maze.seed() << "\n";
         }
 
         for (int y = 0; y < maze.height(); ++y) {
