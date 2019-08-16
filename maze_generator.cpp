@@ -4,7 +4,6 @@
 #include <filesystem>
 #include <fstream>
 #include <iostream>
-#include <optional>
 #include <random>
 #include <tuple>
 #include <vector>
@@ -100,15 +99,27 @@ struct StackNode {
     int rnd_idx;
 };
 
-enum class OutputFormat { Text, RGB };
+enum class OutputFormat { Text, Raw, Pretty, Data };
 
-void output(Maze& maze, std::string filename, OutputFormat output_format, int zoom = 1)
+void output(Maze& maze, const std::string& filename, OutputFormat output_format, int zoom, bool show_info)
 {
-    std::ofstream out{filename, std::ofstream::binary};
+    std::streambuf* sbuf;
+    std::ofstream out_file;
+
+    if (filename != "") {
+        out_file.open(filename, std::ofstream::binary);
+        sbuf = out_file.rdbuf();
+    } else {
+        sbuf = std::cout.rdbuf();
+    }
+
+    std::ostream out(sbuf);
 
     if (output_format == OutputFormat::Text) {
-        out << "width=" << maze.width() << "\n";
-        out << "height=" << maze.height() << "\n";
+        if (show_info) {
+            out << "width=" << maze.width() << "\n";
+            out << "height=" << maze.height() << "\n";
+        }
 
         for (int y = 0; y < maze.height(); ++y) {
             for (int x = 0; x < maze.width(); ++x)
@@ -126,7 +137,15 @@ void output(Maze& maze, std::string filename, OutputFormat output_format, int zo
             out << "##";
 
         out << "#" << "\n";
-    } else {
+    } else if (output_format == OutputFormat::Raw) {
+        if (show_info && filename != "") {
+            // info in Raw mode always goes to stdout
+            std::cout << "width=" << maze.width() << "\n";
+            std::cout << "height=" << maze.height() << "\n";
+            std::cout << "image_width=" << (zoom * (2 * maze.width() + 1)) << "\n";
+            std::cout << "image_height=" << (zoom * (2 * maze.height() + 1)) << "\n";
+        }
+
         const unsigned char black = 0x00;
         const unsigned char white = 0xff;
 
@@ -176,6 +195,52 @@ void output(Maze& maze, std::string filename, OutputFormat output_format, int zo
             for (int z = 0; z < zoom; ++z)
                 out << white;
         }
+    } else if (output_format == OutputFormat::Pretty) {
+        if (show_info) {
+            out << "width=" << maze.width() << "\n";
+            out << "height=" << maze.height() << "\n";
+        }
+
+        for (int y = 0; y < maze.height(); ++y) {
+            if (y == 0) {
+                for (int x = 0; x < maze.width(); ++x)
+                    out << (maze.has_wall({x, y}, Maze::WallFlags::North) ? u8"\u252c\u2500\u2500" : u8"\u252c  ");
+            } else {
+                for (int x = 0; x < maze.width(); ++x)
+                    out << (maze.has_wall({x, y}, Maze::WallFlags::North) ? u8"\u253c\u2500\u2500" : u8"\u253c  ");
+            }
+
+            out << u8"\u253c" << "\n";
+
+            for (int x = 0; x < maze.width(); ++x)
+                out << (maze.has_wall({x, y}, Maze::WallFlags::West) ? u8"\u2502  " : u8"   ");
+
+            out << u8"\u2502" << "\n";
+        }
+
+        for (int x = 0; x < maze.width(); ++x)
+            out << u8"\u2534\u2500\u2500";
+
+        out << u8"\u2518" << "\n";
+    } else if (output_format == OutputFormat::Data) {
+        if (show_info) {
+            out << "width=" << maze.width() << "\n";
+            out << "height=" << maze.height() << "\n";
+        }
+
+        for (int y = 0; y < maze.height(); ++y) {
+            for (int x = 0; x < maze.width(); ++x) {
+                out << (maze.has_wall({x, y}, Maze::WallFlags::North) ? "N" : "-");
+                out << (maze.has_wall({x, y}, Maze::WallFlags::East)  ? "E" : "-");
+                out << (maze.has_wall({x, y}, Maze::WallFlags::West)  ? "W" : "-");
+                out << (maze.has_wall({x, y}, Maze::WallFlags::South) ? "S" : "-");
+
+                if (x < maze.width() - 1)
+                    out << "|";
+            }
+
+            out << "\n";
+        }
     }
 }
 
@@ -212,24 +277,6 @@ void generate(Maze& maze, const Maze::Coordinates starting_point)
     }
 }
 
-bool str_ends_with(const std::string_view s, const std::string_view look_for)
-{
-    if (look_for.size() > s.size())
-        return false;
-
-    return s.find(look_for) == (s.size() - look_for.size());
-}
-
-std::optional<OutputFormat> get_output_format(const std::string& filename)
-{
-    if (str_ends_with(filename, ".maze"))
-        return OutputFormat::Text;
-    else if (str_ends_with(filename, ".raw"))
-        return OutputFormat::RGB;
-
-    return std::nullopt;
-}
-
 void show_usage_and_exit(const clipp::group& cli, const char* argv0, const char* error_message = nullptr)
 {
     if (error_message)
@@ -241,19 +288,26 @@ void show_usage_and_exit(const clipp::group& cli, const char* argv0, const char*
     std::exit(1);
 }
 
-std::tuple<int, int, int, std::string, OutputFormat, int> eval_args(int argc, char* argv[])
+std::tuple<int, int, int, std::string, OutputFormat, int, bool> eval_args(int argc, char* argv[])
 {
     int seed = -1;
     int zoom = 1;
     int width, height;
+    bool info = false;
+    OutputFormat output_format = OutputFormat::Text;
     std::string filename;
 
     auto cli = (
-        (clipp::option("-s", "--seed") & clipp::integer("seed", seed)) % "random seed (0 or bigger)",
-        (clipp::option("-z", "--zoom") & clipp::integer("zoom", zoom)) % "pixel zoom factor for .raw files (default: 1)",
-        clipp::integer("width", width)                                 % "maze width",
-        clipp::integer("height", height)                               % "maze height",
-        clipp::value("filename", filename)                             % "output filename (has to end in .maze or .raw)"
+        (clipp::option("-t", "--text").set(output_format, OutputFormat::Text)     |
+         clipp::option("-p", "--pretty").set(output_format, OutputFormat::Pretty) |
+         clipp::option("-d", "--data").set(output_format, OutputFormat::Data)     |
+         clipp::option("-r", "--raw").set(output_format, OutputFormat::Raw)) % "output format (default: text)",
+        (clipp::option("-s", "--seed") & clipp::integer("seed", seed))       % "random seed (0 or bigger)",
+        (clipp::option("-z", "--zoom") & clipp::integer("zoom", zoom))       % "pixel zoom factor for .raw files (default: 1)",
+        clipp::option("-i", "--info").set(info)                              % "output additional info",
+        clipp::integer("width", width)                                       % "maze width",
+        clipp::integer("height", height)                                     % "maze height",
+        clipp::opt_value("filename", filename)                               % "output filename"
     );
 
     if (!clipp::parse(argc, argv, cli))
@@ -262,23 +316,18 @@ std::tuple<int, int, int, std::string, OutputFormat, int> eval_args(int argc, ch
     if (width < 1 || height < 1)
         show_usage_and_exit(cli, argv[0], "Error: Maze width and height need to be at least 1");
 
-    auto output_format = get_output_format(filename);
-
-    if (!output_format.has_value())
-        show_usage_and_exit(cli, argv[0], "Error: Output filename has to end in either .maze or .raw");
-
     if (zoom < 1)
         zoom = 1;
 
-    return std::make_tuple(seed, width, height, filename, *output_format, zoom);
+    return std::make_tuple(seed, width, height, filename, output_format, zoom, info);
 }
 
 int main(int argc, char* argv[])
 {
-    auto [seed, width, height, filename, output_format, zoom] = eval_args(argc, argv);
+    auto [seed, width, height, filename, output_format, zoom, info] = eval_args(argc, argv);
 
     Maze maze(width, height, seed);
 
     generate(maze, {0, 0});
-    output(maze, filename, output_format, zoom);
+    output(maze, filename, output_format, zoom, info);
 }
