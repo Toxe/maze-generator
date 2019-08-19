@@ -206,20 +206,20 @@ void output(Maze& maze, const std::string& filename, OutputFormat output_format,
         for (int y = 0; y < grid.size(); ++y) {
             for (int x = 0; x < grid[y].size(); ++x) {
                 switch (grid[y][x]) {
-                    case 0b0000: out << u8"  "; break;            // |  |
-                    case 0b0001: out << u8"\u2575 "; break;       // |╵ |
-                    case 0b0010: out << u8" \u2500"; break;       // | ─|
+                    case 0b0000: out << u8"  ";           break;  // |  |
+                    case 0b0001: out << u8"\u2575 ";      break;  // |╵ |
+                    case 0b0010: out << u8" \u2500";      break;  // | ─|
                     case 0b0011: out << u8"\u2514\u2500"; break;  // |└─|
-                    case 0b0100: out << u8"\u2577 "; break;       // |╷ |
-                    case 0b0101: out << u8"\u2502 "; break;       // |│ |
+                    case 0b0100: out << u8"\u2577 ";      break;  // |╷ |
+                    case 0b0101: out << u8"\u2502 ";      break;  // |│ |
                     case 0b0110: out << u8"\u250c\u2500"; break;  // |┌─|
                     case 0b0111: out << u8"\u251C\u2500"; break;  // |├─|
-                    case 0b1000: out << u8"\u2500 "; break;       // |─ |
-                    case 0b1001: out << u8"\u2518 "; break;       // |┘ |
+                    case 0b1000: out << u8"\u2500 ";      break;  // |─ |
+                    case 0b1001: out << u8"\u2518 ";      break;  // |┘ |
                     case 0b1010: out << u8"\u2500\u2500"; break;  // |──|
                     case 0b1011: out << u8"\u2534\u2500"; break;  // |┴─|
-                    case 0b1100: out << u8"\u2510 "; break;       // |┐ |
-                    case 0b1101: out << u8"\u2524 "; break;       // |┤ |
+                    case 0b1100: out << u8"\u2510 ";      break;  // |┐ |
+                    case 0b1101: out << u8"\u2524 ";      break;  // |┤ |
                     case 0b1110: out << u8"\u252C\u2500"; break;  // |┬─|
                     case 0b1111: out << u8"\u253C\u2500"; break;  // |┼─|
                 }
