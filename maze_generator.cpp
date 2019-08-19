@@ -104,6 +104,19 @@ struct StackNode {
 
 enum class OutputFormat { Text, Raw, Pretty, Data };
 
+void output_info(std::ostream& out, const Maze& maze, OutputFormat output_format, int zoom)
+{
+    out << "width=" << maze.width() << "\n";
+    out << "height=" << maze.height() << "\n";
+    out << "seed=" << maze.seed() << "\n";
+
+    if (output_format == OutputFormat::Raw) {
+        out << "image width=" << (zoom * (2 * maze.width() + 1)) << "\n";
+        out << "image height=" << (zoom * (2 * maze.height() + 1)) << "\n";
+        out << "image format=1 byte per pixel, grayscale\n";
+    }
+}
+
 void output(Maze& maze, const std::string& filename, OutputFormat output_format, int zoom, bool show_info)
 {
     std::streambuf* sbuf;
@@ -118,6 +131,16 @@ void output(Maze& maze, const std::string& filename, OutputFormat output_format,
     }
 
     std::ostream out(sbuf);
+
+    if (show_info) {
+        if (output_format == OutputFormat::Raw) {
+            // info in Raw mode always goes to stdout and only if writing maze data to a file
+            if (filename != "")
+                output_info(std::cout, maze, output_format, zoom);
+        } else {
+            output_info(out, maze, output_format, zoom);
+        }
+    }
 
     // create grid with wall data
     const int grid_width = 2 * maze.width() + 1;
@@ -160,12 +183,6 @@ void output(Maze& maze, const std::string& filename, OutputFormat output_format,
     }
 
     if (output_format == OutputFormat::Text) {
-        if (show_info) {
-            out << "width=" << maze.width() << "\n";
-            out << "height=" << maze.height() << "\n";
-            out << "seed=" << maze.seed() << "\n";
-        }
-
         for (int y = 0; y < grid.size(); ++y) {
             for (int x = 0; x < grid[y].size(); ++x)
                 out << (grid[y][x] == 0 ? ' ' : '#');
@@ -173,16 +190,6 @@ void output(Maze& maze, const std::string& filename, OutputFormat output_format,
             out << "\n";
         }
     } else if (output_format == OutputFormat::Raw) {
-        if (show_info && filename != "") {
-            // info in Raw mode always goes to stdout
-            std::cout << "width=" << maze.width() << "\n";
-            std::cout << "height=" << maze.height() << "\n";
-            std::cout << "seed=" << maze.seed() << "\n";
-            std::cout << "image width=" << (zoom * (2 * maze.width() + 1)) << "\n";
-            std::cout << "image height=" << (zoom * (2 * maze.height() + 1)) << "\n";
-            std::cout << "image format=1 byte per pixel, grayscale\n";
-        }
-
         const unsigned char black = 0x00;
         const unsigned char white = 0xff;
 
@@ -197,12 +204,6 @@ void output(Maze& maze, const std::string& filename, OutputFormat output_format,
             }
         }
     } else if (output_format == OutputFormat::Pretty) {
-        if (show_info) {
-            out << "width=" << maze.width() << "\n";
-            out << "height=" << maze.height() << "\n";
-            out << "seed=" << maze.seed() << "\n";
-        }
-
         for (int y = 0; y < grid.size(); ++y) {
             for (int x = 0; x < grid[y].size(); ++x) {
                 switch (grid[y][x]) {
@@ -228,12 +229,6 @@ void output(Maze& maze, const std::string& filename, OutputFormat output_format,
             out << "\n";
         }
     } else if (output_format == OutputFormat::Data) {
-        if (show_info) {
-            out << "width=" << maze.width() << "\n";
-            out << "height=" << maze.height() << "\n";
-            out << "seed=" << maze.seed() << "\n";
-        }
-
         for (int y = 0; y < maze.height(); ++y) {
             for (int x = 0; x < maze.width(); ++x) {
                 out << (maze.has_wall({x, y}, Maze::WallFlags::North) ? "N" : "-");
@@ -331,7 +326,6 @@ std::tuple<int, int, int, std::string, OutputFormat, int, bool> eval_args(int ar
 int main(int argc, char* argv[])
 {
     auto [seed, width, height, filename, output_format, zoom, info] = eval_args(argc, argv);
-
     Maze maze(width, height, seed);
 
     generate(maze, {0, 0});
