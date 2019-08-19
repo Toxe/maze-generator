@@ -118,6 +118,44 @@ void output(Maze& maze, const std::string& filename, OutputFormat output_format,
 
     std::ostream out(sbuf);
 
+    int grid_width = 2 * maze.width() + 1;
+    int grid_height = 2 * maze.height() + 1;
+    std::vector<int> grid(grid_width * grid_height, 0);
+
+    for (int y = 0; y < maze.height(); ++y) {
+        for (int x = 0; x < maze.width(); ++x) {
+            grid[(2 * y + 1) * grid_width + 2 * x + 1] = 0;
+
+            if (maze.has_wall({x, y}, Maze::WallFlags::North)) {
+                grid[(2 * y + 1-1) * grid_width + 2 * x + 1 - 1] |= static_cast<int>(Maze::WallFlags::East);
+                grid[(2 * y + 1-1) * grid_width + 2 * x + 1] |= static_cast<int>(Maze::WallFlags::West);
+                grid[(2 * y + 1-1) * grid_width + 2 * x + 1] |= static_cast<int>(Maze::WallFlags::East);
+                grid[(2 * y + 1-1) * grid_width + 2 * x + 1 + 1] |= static_cast<int>(Maze::WallFlags::West);
+            }
+
+            if (maze.has_wall({x, y}, Maze::WallFlags::East)) {
+                grid[(2 * y + 1 - 1) * grid_width + 2 * x + 1 + 1] |= static_cast<int>(Maze::WallFlags::South);
+                grid[(2 * y + 1) * grid_width + 2 * x + 1 + 1] |= static_cast<int>(Maze::WallFlags::North);
+                grid[(2 * y + 1) * grid_width + 2 * x + 1 + 1] |= static_cast<int>(Maze::WallFlags::South);
+                grid[(2 * y + 1 + 1) * grid_width + 2 * x + 1 + 1] |= static_cast<int>(Maze::WallFlags::North);
+            }
+
+            if (maze.has_wall({x, y}, Maze::WallFlags::South)) {
+                grid[(2 * y + 1+1) * grid_width + 2 * x + 1 - 1] |= static_cast<int>(Maze::WallFlags::East);
+                grid[(2 * y + 1+1) * grid_width + 2 * x + 1] |= static_cast<int>(Maze::WallFlags::West);
+                grid[(2 * y + 1+1) * grid_width + 2 * x + 1] |= static_cast<int>(Maze::WallFlags::East);
+                grid[(2 * y + 1+1) * grid_width + 2 * x + 1 + 1] |= static_cast<int>(Maze::WallFlags::West);
+            }
+
+            if (maze.has_wall({x, y}, Maze::WallFlags::West)) {
+                grid[(2 * y + 1 - 1) * grid_width + 2 * x + 1 - 1] |= static_cast<int>(Maze::WallFlags::South);
+                grid[(2 * y + 1) * grid_width + 2 * x + 1 - 1] |= static_cast<int>(Maze::WallFlags::North);
+                grid[(2 * y + 1) * grid_width + 2 * x + 1 - 1] |= static_cast<int>(Maze::WallFlags::South);
+                grid[(2 * y + 1 + 1) * grid_width + 2 * x + 1 - 1] |= static_cast<int>(Maze::WallFlags::North);
+            }
+        }
+    }
+
     if (output_format == OutputFormat::Text) {
         if (show_info) {
             out << "width=" << maze.width() << "\n";
@@ -125,22 +163,12 @@ void output(Maze& maze, const std::string& filename, OutputFormat output_format,
             out << "seed=" << maze.seed() << "\n";
         }
 
-        for (int y = 0; y < maze.height(); ++y) {
-            for (int x = 0; x < maze.width(); ++x)
-                out << (maze.has_wall({x, y}, Maze::WallFlags::North) ? "##" : "# ");
+        for (int y = 0; y < grid_width; ++y) {
+            for (int x = 0; x < grid_height; ++x)
+                out << (grid[y * grid_width + x] == 0 ? ' ' : '#');
 
-            out << "#" << "\n";
-
-            for (int x = 0; x < maze.width(); ++x)
-                out << (maze.has_wall({x, y}, Maze::WallFlags::West) ? "# " : "  ");
-
-            out << "#" << "\n";
+            out << "\n";
         }
-
-        for (int x = 0; x < maze.width(); ++x)
-            out << "##";
-
-        out << "#" << "\n";
     } else if (output_format == OutputFormat::Raw) {
         if (show_info && filename != "") {
             // info in Raw mode always goes to stdout
@@ -155,51 +183,15 @@ void output(Maze& maze, const std::string& filename, OutputFormat output_format,
         const unsigned char black = 0x00;
         const unsigned char white = 0xff;
 
-        for (int y = 0; y < maze.height(); ++y) {
+        for (int y = 0; y < grid_width; ++y) {
             for (int r = 0; r < zoom; ++r) {
-                for (int x = 0; x < maze.width(); ++x) {
-                    if (maze.has_wall({x, y}, Maze::WallFlags::North)) {
-                        for (int z = 0; z < zoom; ++z)
-                            out << white << white;
-                    } else {
-                        for (int z = 0; z < zoom; ++z)
-                            out << white;
+                for (int x = 0; x < grid_height; ++x) {
+                    auto c = grid[y * grid_width + x];
 
-                        for (int z = 0; z < zoom; ++z)
-                            out << black;
-                    }
+                    for (int z = 0; z < zoom; ++z)
+                        out << (c == 0 ? black : white);
                 }
-
-                for (int z = 0; z < zoom; ++z)
-                    out << white;
             }
-
-            for (int r = 0; r < zoom; ++r) {
-                for (int x = 0; x < maze.width(); ++x) {
-                    if (maze.has_wall({x, y}, Maze::WallFlags::West)) {
-                        for (int z = 0; z < zoom; ++z)
-                            out << white;
-
-                        for (int z = 0; z < zoom; ++z)
-                            out << black;
-                    } else {
-                        for (int z = 0; z < zoom; ++z)
-                            out << black << black;
-                    }
-                }
-
-                for (int z = 0; z < zoom; ++z)
-                    out << white;
-            }
-        }
-
-        for (int r = 0; r < zoom; ++r) {
-            for (int x = 0; x < maze.width(); ++x)
-                for (int z = 0; z < zoom; ++z)
-                    out << white << white;
-
-            for (int z = 0; z < zoom; ++z)
-                out << white;
         }
     } else if (output_format == OutputFormat::Pretty) {
         if (show_info) {
@@ -208,50 +200,9 @@ void output(Maze& maze, const std::string& filename, OutputFormat output_format,
             out << "seed=" << maze.seed() << "\n";
         }
 
-        int grid_width = 2 * maze.width() + 1;
-        int grid_height = 2 * maze.height() + 1;
-
-        std::vector<int> grid(grid_width * grid_height, 0);
-
-        for (int y = 0; y < maze.height(); ++y) {
-            for (int x = 0; x < maze.width(); ++x) {
-                grid[(2 * y + 1) * grid_width + 2 * x + 1] = 0;
-
-                if (maze.has_wall({x, y}, Maze::WallFlags::North)) {
-                    grid[(2 * y + 1-1) * grid_width + 2 * x + 1 - 1] |= static_cast<int>(Maze::WallFlags::East);
-                    grid[(2 * y + 1-1) * grid_width + 2 * x + 1] |= static_cast<int>(Maze::WallFlags::West);
-                    grid[(2 * y + 1-1) * grid_width + 2 * x + 1] |= static_cast<int>(Maze::WallFlags::East);
-                    grid[(2 * y + 1-1) * grid_width + 2 * x + 1 + 1] |= static_cast<int>(Maze::WallFlags::West);
-                }
-
-                if (maze.has_wall({x, y}, Maze::WallFlags::East)) {
-                    grid[(2 * y + 1 - 1) * grid_width + 2 * x + 1 + 1] |= static_cast<int>(Maze::WallFlags::South);
-                    grid[(2 * y + 1) * grid_width + 2 * x + 1 + 1] |= static_cast<int>(Maze::WallFlags::North);
-                    grid[(2 * y + 1) * grid_width + 2 * x + 1 + 1] |= static_cast<int>(Maze::WallFlags::South);
-                    grid[(2 * y + 1 + 1) * grid_width + 2 * x + 1 + 1] |= static_cast<int>(Maze::WallFlags::North);
-                }
-
-                if (maze.has_wall({x, y}, Maze::WallFlags::South)) {
-                    grid[(2 * y + 1+1) * grid_width + 2 * x + 1 - 1] |= static_cast<int>(Maze::WallFlags::East);
-                    grid[(2 * y + 1+1) * grid_width + 2 * x + 1] |= static_cast<int>(Maze::WallFlags::West);
-                    grid[(2 * y + 1+1) * grid_width + 2 * x + 1] |= static_cast<int>(Maze::WallFlags::East);
-                    grid[(2 * y + 1+1) * grid_width + 2 * x + 1 + 1] |= static_cast<int>(Maze::WallFlags::West);
-                }
-
-                if (maze.has_wall({x, y}, Maze::WallFlags::West)) {
-                    grid[(2 * y + 1 - 1) * grid_width + 2 * x + 1 - 1] |= static_cast<int>(Maze::WallFlags::South);
-                    grid[(2 * y + 1) * grid_width + 2 * x + 1 - 1] |= static_cast<int>(Maze::WallFlags::North);
-                    grid[(2 * y + 1) * grid_width + 2 * x + 1 - 1] |= static_cast<int>(Maze::WallFlags::South);
-                    grid[(2 * y + 1 + 1) * grid_width + 2 * x + 1 - 1] |= static_cast<int>(Maze::WallFlags::North);
-                }
-            }
-        }
-
         for (int y = 0; y < grid_width; ++y) {
             for (int x = 0; x < grid_height; ++x) {
-                auto c = grid[y * grid_width + x];
-
-                switch (c) {
+                switch (grid[y * grid_width + x]) {
                     case 0b0000: out << u8"  "; break;            // |  |
                     case 0b0001: out << u8"\u2575 "; break;       // |╵ |
                     case 0b0010: out << u8" \u2500"; break;       // | ─|
