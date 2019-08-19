@@ -284,8 +284,8 @@ void output(Maze& maze, const std::string& filename, OutputFormat output_format,
             for (int x = 0; x < maze.width(); ++x) {
                 out << (maze.has_wall({x, y}, Maze::WallFlags::North) ? "N" : "-");
                 out << (maze.has_wall({x, y}, Maze::WallFlags::East)  ? "E" : "-");
-                out << (maze.has_wall({x, y}, Maze::WallFlags::West)  ? "W" : "-");
                 out << (maze.has_wall({x, y}, Maze::WallFlags::South) ? "S" : "-");
+                out << (maze.has_wall({x, y}, Maze::WallFlags::West)  ? "W" : "-");
 
                 if (x < maze.width() - 1)
                     out << "|";
