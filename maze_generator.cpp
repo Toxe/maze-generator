@@ -208,27 +208,71 @@ void output(Maze& maze, const std::string& filename, OutputFormat output_format,
             out << "seed=" << maze.seed() << "\n";
         }
 
+        int grid_width = 2 * maze.width() + 1;
+        int grid_height = 2 * maze.height() + 1;
+
+        std::vector<int> grid(grid_width * grid_height, 0);
+
         for (int y = 0; y < maze.height(); ++y) {
-            if (y == 0) {
-                for (int x = 0; x < maze.width(); ++x)
-                    out << (maze.has_wall({x, y}, Maze::WallFlags::North) ? u8"\u252c\u2500\u2500" : u8"\u252c  ");
-            } else {
-                for (int x = 0; x < maze.width(); ++x)
-                    out << (maze.has_wall({x, y}, Maze::WallFlags::North) ? u8"\u253c\u2500\u2500" : u8"\u253c  ");
+            for (int x = 0; x < maze.width(); ++x) {
+                grid[(2 * y + 1) * grid_width + 2 * x + 1] = 0;
+
+                if (maze.has_wall({x, y}, Maze::WallFlags::North)) {
+                    grid[(2 * y + 1-1) * grid_width + 2 * x + 1 - 1] |= static_cast<int>(Maze::WallFlags::East);
+                    grid[(2 * y + 1-1) * grid_width + 2 * x + 1] |= static_cast<int>(Maze::WallFlags::West);
+                    grid[(2 * y + 1-1) * grid_width + 2 * x + 1] |= static_cast<int>(Maze::WallFlags::East);
+                    grid[(2 * y + 1-1) * grid_width + 2 * x + 1 + 1] |= static_cast<int>(Maze::WallFlags::West);
+                }
+
+                if (maze.has_wall({x, y}, Maze::WallFlags::East)) {
+                    grid[(2 * y + 1 - 1) * grid_width + 2 * x + 1 + 1] |= static_cast<int>(Maze::WallFlags::South);
+                    grid[(2 * y + 1) * grid_width + 2 * x + 1 + 1] |= static_cast<int>(Maze::WallFlags::North);
+                    grid[(2 * y + 1) * grid_width + 2 * x + 1 + 1] |= static_cast<int>(Maze::WallFlags::South);
+                    grid[(2 * y + 1 + 1) * grid_width + 2 * x + 1 + 1] |= static_cast<int>(Maze::WallFlags::North);
+                }
+
+                if (maze.has_wall({x, y}, Maze::WallFlags::South)) {
+                    grid[(2 * y + 1+1) * grid_width + 2 * x + 1 - 1] |= static_cast<int>(Maze::WallFlags::East);
+                    grid[(2 * y + 1+1) * grid_width + 2 * x + 1] |= static_cast<int>(Maze::WallFlags::West);
+                    grid[(2 * y + 1+1) * grid_width + 2 * x + 1] |= static_cast<int>(Maze::WallFlags::East);
+                    grid[(2 * y + 1+1) * grid_width + 2 * x + 1 + 1] |= static_cast<int>(Maze::WallFlags::West);
+                }
+
+                if (maze.has_wall({x, y}, Maze::WallFlags::West)) {
+                    grid[(2 * y + 1 - 1) * grid_width + 2 * x + 1 - 1] |= static_cast<int>(Maze::WallFlags::South);
+                    grid[(2 * y + 1) * grid_width + 2 * x + 1 - 1] |= static_cast<int>(Maze::WallFlags::North);
+                    grid[(2 * y + 1) * grid_width + 2 * x + 1 - 1] |= static_cast<int>(Maze::WallFlags::South);
+                    grid[(2 * y + 1 + 1) * grid_width + 2 * x + 1 - 1] |= static_cast<int>(Maze::WallFlags::North);
+                }
             }
-
-            out << u8"\u253c" << "\n";
-
-            for (int x = 0; x < maze.width(); ++x)
-                out << (maze.has_wall({x, y}, Maze::WallFlags::West) ? u8"\u2502  " : u8"   ");
-
-            out << u8"\u2502" << "\n";
         }
 
-        for (int x = 0; x < maze.width(); ++x)
-            out << u8"\u2534\u2500\u2500";
+        for (int y = 0; y < grid_width; ++y) {
+            for (int x = 0; x < grid_height; ++x) {
+                auto c = grid[y * grid_width + x];
 
-        out << u8"\u2518" << "\n";
+                switch (c) {
+                    case 0b0000: out << u8"  "; break;            // |  |
+                    case 0b0001: out << u8"\u2575 "; break;       // |╵ |
+                    case 0b0010: out << u8" \u2500"; break;       // | ─|
+                    case 0b0011: out << u8"\u2514\u2500"; break;  // |└─|
+                    case 0b0100: out << u8"\u2577 "; break;       // |╷ |
+                    case 0b0101: out << u8"\u2502 "; break;       // |│ |
+                    case 0b0110: out << u8"\u250c\u2500"; break;  // |┌─|
+                    case 0b0111: out << u8"\u251C\u2500"; break;  // |├─|
+                    case 0b1000: out << u8"\u2500 "; break;       // |─ |
+                    case 0b1001: out << u8"\u2518 "; break;       // |┘ |
+                    case 0b1010: out << u8"\u2500\u2500"; break;  // |──|
+                    case 0b1011: out << u8"\u2534\u2500"; break;  // |┴─|
+                    case 0b1100: out << u8"\u2510 "; break;       // |┐ |
+                    case 0b1101: out << u8"\u2524 "; break;       // |┤ |
+                    case 0b1110: out << u8"\u252C\u2500"; break;  // |┬─|
+                    case 0b1111: out << u8"\u253C\u2500"; break;  // |┼─|
+                }
+            }
+
+            out << "\n";
+        }
     } else if (output_format == OutputFormat::Data) {
         if (show_info) {
             out << "width=" << maze.width() << "\n";
