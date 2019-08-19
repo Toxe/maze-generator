@@ -109,6 +109,7 @@ void output(Maze& maze, const std::string& filename, OutputFormat output_format,
     std::streambuf* sbuf;
     std::ofstream out_file;
 
+    // write output to either file or stdout
     if (filename != "") {
         out_file.open(filename, std::ofstream::binary);
         sbuf = out_file.rdbuf();
@@ -118,40 +119,42 @@ void output(Maze& maze, const std::string& filename, OutputFormat output_format,
 
     std::ostream out(sbuf);
 
-    int grid_width = 2 * maze.width() + 1;
-    int grid_height = 2 * maze.height() + 1;
-    std::vector<int> grid(grid_width * grid_height, 0);
+    // create grid with wall data
+    const int grid_width = 2 * maze.width() + 1;
+    const int grid_height = 2 * maze.height() + 1;
+    std::vector<std::vector<Maze::Node>> grid(grid_height);
+
+    for (int y = 0; y < grid_height; ++y) {
+        grid[y].reserve(grid_width);
+
+        for (int x = 0; x < grid_width; ++x)
+            grid[y].push_back(0);
+    }
 
     for (int y = 0; y < maze.height(); ++y) {
         for (int x = 0; x < maze.width(); ++x) {
-            grid[(2 * y + 1) * grid_width + 2 * x + 1] = 0;
-
             if (maze.has_wall({x, y}, Maze::WallFlags::North)) {
-                grid[(2 * y + 1-1) * grid_width + 2 * x + 1 - 1] |= static_cast<int>(Maze::WallFlags::East);
-                grid[(2 * y + 1-1) * grid_width + 2 * x + 1] |= static_cast<int>(Maze::WallFlags::West);
-                grid[(2 * y + 1-1) * grid_width + 2 * x + 1] |= static_cast<int>(Maze::WallFlags::East);
-                grid[(2 * y + 1-1) * grid_width + 2 * x + 1 + 1] |= static_cast<int>(Maze::WallFlags::West);
+                grid[2*y][2*x    ] |= static_cast<Maze::Node>(Maze::WallFlags::East);
+                grid[2*y][2*x + 1] |= static_cast<Maze::Node>(Maze::WallFlags::East) | static_cast<Maze::Node>(Maze::WallFlags::West);
+                grid[2*y][2*x + 2] |= static_cast<Maze::Node>(Maze::WallFlags::West);
             }
 
             if (maze.has_wall({x, y}, Maze::WallFlags::East)) {
-                grid[(2 * y + 1 - 1) * grid_width + 2 * x + 1 + 1] |= static_cast<int>(Maze::WallFlags::South);
-                grid[(2 * y + 1) * grid_width + 2 * x + 1 + 1] |= static_cast<int>(Maze::WallFlags::North);
-                grid[(2 * y + 1) * grid_width + 2 * x + 1 + 1] |= static_cast<int>(Maze::WallFlags::South);
-                grid[(2 * y + 1 + 1) * grid_width + 2 * x + 1 + 1] |= static_cast<int>(Maze::WallFlags::North);
+                grid[2*y    ][2*x + 2] |= static_cast<Maze::Node>(Maze::WallFlags::South);
+                grid[2*y + 1][2*x + 2] |= static_cast<Maze::Node>(Maze::WallFlags::North) | static_cast<Maze::Node>(Maze::WallFlags::South);
+                grid[2*y + 2][2*x + 2] |= static_cast<Maze::Node>(Maze::WallFlags::North);
             }
 
             if (maze.has_wall({x, y}, Maze::WallFlags::South)) {
-                grid[(2 * y + 1+1) * grid_width + 2 * x + 1 - 1] |= static_cast<int>(Maze::WallFlags::East);
-                grid[(2 * y + 1+1) * grid_width + 2 * x + 1] |= static_cast<int>(Maze::WallFlags::West);
-                grid[(2 * y + 1+1) * grid_width + 2 * x + 1] |= static_cast<int>(Maze::WallFlags::East);
-                grid[(2 * y + 1+1) * grid_width + 2 * x + 1 + 1] |= static_cast<int>(Maze::WallFlags::West);
+                grid[2*y + 2][2*x    ] |= static_cast<Maze::Node>(Maze::WallFlags::East);
+                grid[2*y + 2][2*x + 1] |= static_cast<Maze::Node>(Maze::WallFlags::East) | static_cast<Maze::Node>(Maze::WallFlags::West);
+                grid[2*y + 2][2*x + 2] |= static_cast<Maze::Node>(Maze::WallFlags::West);
             }
 
             if (maze.has_wall({x, y}, Maze::WallFlags::West)) {
-                grid[(2 * y + 1 - 1) * grid_width + 2 * x + 1 - 1] |= static_cast<int>(Maze::WallFlags::South);
-                grid[(2 * y + 1) * grid_width + 2 * x + 1 - 1] |= static_cast<int>(Maze::WallFlags::North);
-                grid[(2 * y + 1) * grid_width + 2 * x + 1 - 1] |= static_cast<int>(Maze::WallFlags::South);
-                grid[(2 * y + 1 + 1) * grid_width + 2 * x + 1 - 1] |= static_cast<int>(Maze::WallFlags::North);
+                grid[2*y    ][2*x] |= static_cast<Maze::Node>(Maze::WallFlags::South);
+                grid[2*y + 1][2*x] |= static_cast<Maze::Node>(Maze::WallFlags::North) | static_cast<Maze::Node>(Maze::WallFlags::South);
+                grid[2*y + 2][2*x] |= static_cast<Maze::Node>(Maze::WallFlags::North);
             }
         }
     }
@@ -163,9 +166,9 @@ void output(Maze& maze, const std::string& filename, OutputFormat output_format,
             out << "seed=" << maze.seed() << "\n";
         }
 
-        for (int y = 0; y < grid_width; ++y) {
-            for (int x = 0; x < grid_height; ++x)
-                out << (grid[y * grid_width + x] == 0 ? ' ' : '#');
+        for (int y = 0; y < grid.size(); ++y) {
+            for (int x = 0; x < grid[y].size(); ++x)
+                out << (grid[y][x] == 0 ? ' ' : '#');
 
             out << "\n";
         }
@@ -183,10 +186,10 @@ void output(Maze& maze, const std::string& filename, OutputFormat output_format,
         const unsigned char black = 0x00;
         const unsigned char white = 0xff;
 
-        for (int y = 0; y < grid_width; ++y) {
+        for (int y = 0; y < grid.size(); ++y) {
             for (int r = 0; r < zoom; ++r) {
-                for (int x = 0; x < grid_height; ++x) {
-                    auto c = grid[y * grid_width + x];
+                for (int x = 0; x < grid[y].size(); ++x) {
+                    auto c = grid[y][x];
 
                     for (int z = 0; z < zoom; ++z)
                         out << (c == 0 ? black : white);
@@ -200,9 +203,9 @@ void output(Maze& maze, const std::string& filename, OutputFormat output_format,
             out << "seed=" << maze.seed() << "\n";
         }
 
-        for (int y = 0; y < grid_width; ++y) {
-            for (int x = 0; x < grid_height; ++x) {
-                switch (grid[y * grid_width + x]) {
+        for (int y = 0; y < grid.size(); ++y) {
+            for (int x = 0; x < grid[y].size(); ++x) {
+                switch (grid[y][x]) {
                     case 0b0000: out << u8"  "; break;            // |  |
                     case 0b0001: out << u8"\u2575 "; break;       // |╵ |
                     case 0b0010: out << u8" \u2500"; break;       // | ─|
