@@ -15,7 +15,11 @@ public:
     enum class Directions { North = 0, East, South, West };
     enum class WallFlags { North = 0b0001, East = 0b0010, South = 0b0100, West = 0b1000 };
 
-    struct Coordinates { int x, y; };
+    struct Coordinates {
+        Coordinates(const int ix, const int iy) : x{ix}, y{iy} {}
+        Coordinates(const std::size_t ix, const std::size_t iy) : x{static_cast<int>(ix)}, y{static_cast<int>(iy)} {}
+        int x, y;
+    };
 
     Maze(const int width, const int height, const int seed = -1)
         : width_{width},
@@ -23,10 +27,11 @@ public:
           nodes_(static_cast<std::size_t>(width * height), static_cast<Node>(WallFlags::North) | static_cast<Node>(WallFlags::East) | static_cast<Node>(WallFlags::South) | static_cast<Node>(WallFlags::West)),
           random_device_(),
           random_generator_(random_device_()),
-          random_dist_{0, 23} {
-              seed_ = (seed >= 0) ? seed : random_device_();
-              random_generator_.seed(seed_);
-          }
+          random_dist_{0, 23}
+    {
+        seed_ = (seed >= 0) ? static_cast<std::random_device::result_type>(seed) : random_device_();
+        random_generator_.seed(seed_);
+    }
 
     int width() const { return width_; }
     int height() const { return height_; }
@@ -145,17 +150,17 @@ void output(Maze& maze, const std::string& filename, OutputFormat output_format,
     // create grid with wall data
     const int grid_width = 2 * maze.width() + 1;
     const int grid_height = 2 * maze.height() + 1;
-    std::vector<std::vector<Maze::Node>> grid(grid_height);
+    std::vector<std::vector<Maze::Node>> grid(static_cast<std::size_t>(grid_height));
 
-    for (int y = 0; y < grid_height; ++y) {
-        grid[y].reserve(grid_width);
+    for (std::size_t y = 0; y < static_cast<std::size_t>(grid_height); ++y) {
+        grid[y].reserve(static_cast<std::size_t>(grid_width));
 
-        for (int x = 0; x < grid_width; ++x)
+        for (std::size_t x = 0; x < static_cast<std::size_t>(grid_width); ++x)
             grid[y].push_back(0);
     }
 
-    for (int y = 0; y < maze.height(); ++y) {
-        for (int x = 0; x < maze.width(); ++x) {
+    for (std::size_t y = 0; y < static_cast<std::size_t>(maze.height()); ++y) {
+        for (std::size_t x = 0; x < static_cast<std::size_t>(maze.width()); ++x) {
             if (maze.has_wall({x, y}, Maze::WallFlags::North)) {
                 grid[2*y][2*x    ] |= static_cast<Maze::Node>(Maze::WallFlags::East);
                 grid[2*y][2*x + 1] |= static_cast<Maze::Node>(Maze::WallFlags::East) | static_cast<Maze::Node>(Maze::WallFlags::West);
@@ -183,8 +188,8 @@ void output(Maze& maze, const std::string& filename, OutputFormat output_format,
     }
 
     if (output_format == OutputFormat::Text) {
-        for (int y = 0; y < grid.size(); ++y) {
-            for (int x = 0; x < grid[y].size(); ++x)
+        for (std::size_t y = 0; y < grid.size(); ++y) {
+            for (std::size_t x = 0; x < grid[y].size(); ++x)
                 out << (grid[y][x] == 0 ? ' ' : '#');
 
             out << "\n";
@@ -193,9 +198,9 @@ void output(Maze& maze, const std::string& filename, OutputFormat output_format,
         const unsigned char black = 0x00;
         const unsigned char white = 0xff;
 
-        for (int y = 0; y < grid.size(); ++y) {
+        for (std::size_t y = 0; y < grid.size(); ++y) {
             for (int r = 0; r < zoom; ++r) {
-                for (int x = 0; x < grid[y].size(); ++x) {
+                for (std::size_t x = 0; x < grid[y].size(); ++x) {
                     auto c = grid[y][x];
 
                     for (int z = 0; z < zoom; ++z)
@@ -204,8 +209,8 @@ void output(Maze& maze, const std::string& filename, OutputFormat output_format,
             }
         }
     } else if (output_format == OutputFormat::Pretty) {
-        for (int y = 0; y < grid.size(); ++y) {
-            for (int x = 0; x < grid[y].size(); ++x) {
+        for (std::size_t y = 0; y < grid.size(); ++y) {
+            for (std::size_t x = 0; x < grid[y].size(); ++x) {
                 switch (grid[y][x]) {
                     case 0b0000: out << u8"  ";           break;  // |  |
                     case 0b0001: out << u8"\u2575 ";      break;  // |╵ |
