@@ -1,7 +1,14 @@
 # Maze Generator
 A C++ maze generator that uses recursive backtracking.
 
-It is not using a recursive function to generate the maze but is using its own data stack to store backtracking information which in return means the mazes can be arbitrarily big and we are not limited by the size of the call stack.
+The generator is not using a recursive function to calculate the maze but is using its own data stack to store backtracking information which in return means the mazes can be arbitrarily big and are not limited by the size of the call stack.
+
+It supports four different output formats:
+
+- **Text**: Uses ASCII `#` characters for walls.
+- **Pretty**: Uses UNICODE line drawing characters.
+- **Data**: Export the internal wall data.
+- **Raw**: Generate a 1 byte per pixel grayscale raw image.
 
 ## Usage
 ```
