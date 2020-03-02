@@ -6,7 +6,9 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 find_package(clipp CONFIG REQUIRED)
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    find_library(Filesystem_LIBRARY "c++fs")
+    if(${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS 9)
+        find_library(Filesystem_LIBRARY "c++fs")
+    endif()
 endif()
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
