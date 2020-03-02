@@ -10,6 +10,17 @@ It supports four different output formats:
 - **Data**: Export the internal wall data.
 - **Raw**: Generate a 1 byte per pixel grayscale raw image.
 
+## Dependencies
+
+- CMake
+- Clipp
+
+### Vcpkg
+
+Install Vcpkg dependencies with:
+
+    $ vcpkg install $(< .vcpkg)
+
 ## Usage
 ```
 $ ./maze_generator
