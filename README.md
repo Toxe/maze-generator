@@ -129,6 +129,12 @@ Example: Image size of a 10x10 maze is 21x21 pixels.
 maze_generator --seed 42 --raw 10 10 example.raw
 ```
 
+To convert the raw image into a PNG using ImageMagick:
+
+```
+convert -size 21x21 -depth 8 gray:example.raw example.png
+```
+
 ![Example](images/example.png)
 
 
@@ -145,6 +151,12 @@ Example: Image size of a 10x10 maze with zoom level 10 is 210x210 pixels.
 
 ```
 maze_generator --seed 42 --raw --zoom 10 10 10 example10.raw
+```
+
+To convert the raw image into a PNG using ImageMagick:
+
+```
+convert -size 210x210 -depth 8 gray:example10.raw example10.png
 ```
 
 ![Example zoom 10](images/example_zoom10.png)
