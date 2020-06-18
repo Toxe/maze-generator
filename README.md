@@ -1,3 +1,5 @@
+![Screenshot](images/screenshot.png)
+
 # Maze Generator
 A C++ maze generator that uses recursive backtracking.
 
