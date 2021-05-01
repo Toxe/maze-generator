@@ -1,5 +1,5 @@
 set(ALL_TARGETS
-    mandelbrot
+    maze_generator
 )
 
 add_executable(maze_generator
