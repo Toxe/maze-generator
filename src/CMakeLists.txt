@@ -3,7 +3,8 @@ set(ALL_TARGETS
 )
 
 add_executable(maze_generator
-               maze_generator.cpp)
+               maze_generator.cpp
+               cli.cpp cli.h)
 
 foreach(target ${ALL_TARGETS})
     set_target_properties(${target} PROPERTIES CXX_EXTENSIONS OFF)
