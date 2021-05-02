@@ -107,13 +107,13 @@ struct StackNode {
 
 void output_info(std::ostream& out, const Maze& maze, OutputFormat output_format, int zoom)
 {
-    out << "width=" << maze.width() << "\n";
-    out << "height=" << maze.height() << "\n";
-    out << "seed=" << maze.seed() << "\n";
+    out << "width=" << maze.width() << '\n';
+    out << "height=" << maze.height() << '\n';
+    out << "seed=" << maze.seed() << '\n';
 
     if (output_format == OutputFormat::Raw) {
-        out << "image width=" << (zoom * (2 * maze.width() + 1)) << "\n";
-        out << "image height=" << (zoom * (2 * maze.height() + 1)) << "\n";
+        out << "image width=" << (zoom * (2 * maze.width() + 1)) << '\n';
+        out << "image height=" << (zoom * (2 * maze.height() + 1)) << '\n';
         out << "image format=1 byte per pixel, grayscale\n";
     }
 }
@@ -188,7 +188,7 @@ void output(Maze& maze, const std::string& filename, OutputFormat output_format,
             for (std::size_t x = 0; x < grid[y].size(); ++x)
                 out << (grid[y][x] == 0 ? ' ' : '#');
 
-            out << "\n";
+            out << '\n';
         }
     } else if (output_format == OutputFormat::Raw) {
         const unsigned char black = 0x00;
@@ -227,7 +227,7 @@ void output(Maze& maze, const std::string& filename, OutputFormat output_format,
                 }
             }
 
-            out << "\n";
+            out << '\n';
         }
     } else if (output_format == OutputFormat::Data) {
         for (int y = 0; y < maze.height(); ++y) {
@@ -241,7 +241,7 @@ void output(Maze& maze, const std::string& filename, OutputFormat output_format,
                     out << "|";
             }
 
-            out << "\n";
+            out << '\n';
         }
     }
 }
