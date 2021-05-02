@@ -1,5 +1,5 @@
 {
     "name": "maze-generator",
     "version": "0.0.1",
-    "dependencies": ["clipp"]
+    "dependencies": ["fmt", "spdlog", "cli11"]
 }
