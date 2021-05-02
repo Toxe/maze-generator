@@ -12,4 +12,4 @@ foreach(target ${ALL_TARGETS})
     target_link_libraries(${target} PRIVATE ${SANITIZER_FLAGS})
 endforeach()
 
-target_link_libraries(maze_generator PRIVATE clipp::clipp)
+target_link_libraries(maze_generator PRIVATE CLI11::CLI11 fmt::fmt spdlog::spdlog spdlog::spdlog_header_only)

@@ -15,37 +15,35 @@ It supports four different output formats:
 ## Dependencies
 
 - CMake
-- Clipp
-
-### Vcpkg
-
-Install Vcpkg dependencies with:
-
-    $ vcpkg install $(< .vcpkg)
+- Vcpkg
 
 ## Usage
 ```
-$ ./maze_generator
-SYNOPSIS
-        maze_generator [-t|-p|-d|-r] [-s <seed>] [-z <zoom>] [-i] <width> <height> [<filename>]
+$ ./maze_generator -h
+Maze Generator
+Usage: maze_generator.exe [OPTIONS] width height [filename]
 
-OPTIONS
-        -t, --text|-p, --pretty|-d, --data|-r, --raw
-                    output format (default: text)
+Positionals:
+  width INT REQUIRED          maze width
+  height INT REQUIRED         maze height
+  filename TEXT               output filename
 
-        -s, --seed <seed>
-                    random seed (0 or bigger)
-
-        -z, --zoom <zoom>
-                    pixel zoom factor for .raw files (default: 1)
-
-        -i, --info  output additional info
-        <width>     maze width
-        <height>    maze height
-        <filename>  output filename
-
-EXAMPLE
-        maze_generator 20 20 test.maze
+Options:
+  -h,--help                   Print this help message and exit
+  -s,--seed INT               random seed (0 or bigger)
+  -z,--zoom INT=1             pixel zoom factor for .raw files
+  -i,--info                   output additional info
+  -v                          log level (-v: verbose, -vv: debug messages)
+[Option Group: output format (default: text)]
+  Options:
+    -t,--text Excludes: --pretty --data --raw
+                                text: uses ASCII '#' characters for walls
+    -p,--pretty Excludes: --text --data --raw
+                                pretty: uses UNICODE line drawing characters
+    -d,--data Excludes: --text --pretty --raw
+                                data: export the internal wall data
+    -r,--raw Excludes: --text --pretty --data
+                                raw: generate a 1 byte per pixel grayscale raw image
 ```
 
 # Examples
