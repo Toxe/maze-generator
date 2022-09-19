@@ -39,7 +39,7 @@ std::tuple<int, int, int, std::string, OutputFormat, int, bool> eval_args(int ar
     app.add_option("height", height, "maze height")->required();
     app.add_option("filename", filename, "output filename");
     app.add_option("-s,--seed", seed, "random seed (0 or bigger)");
-    app.add_option("-z,--zoom", zoom, "pixel zoom factor for .raw files", true);
+    app.add_option("-z,--zoom", zoom, "pixel zoom factor for .raw files");
     app.add_flag("-i,--info", info, "output additional info");
     app.add_flag("-v", log_level_flag, "log level (-v: verbose, -vv: debug messages)");
 
