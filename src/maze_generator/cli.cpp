@@ -2,13 +2,13 @@
 #include <filesystem>
 #include <optional>
 
-#include <CLI/App.hpp>
-#include <CLI/Config.hpp>
-#include <CLI/Formatter.hpp>
-#include <fmt/core.h>
-#include <spdlog/spdlog.h>
+#include "CLI/App.hpp"
+#include "CLI/Config.hpp"
+#include "CLI/Formatter.hpp"
+#include "fmt/core.h"
+#include "spdlog/spdlog.h"
 
-#include "cli.h"
+#include "cli.hpp"
 
 void show_usage_and_exit(const CLI::App& app, const char* error_message = nullptr, const std::optional<CLI::ParseError>& error = {})
 {
