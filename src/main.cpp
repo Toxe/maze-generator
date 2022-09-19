@@ -1,11 +1,12 @@
-#include "maze_generator/cli.hpp"
+#include "maze_generator/command_line/command_line.hpp"
 #include "maze_generator/maze_generator.hpp"
 
 int main(int argc, char* argv[])
 {
-    auto [seed, width, height, filename, output_format, zoom, info] = eval_args(argc, argv);
-    Maze maze(width, height, seed);
+    maze_generator::command_line::CommandLine cli(argc, argv);
+
+    maze_generator::maze_generator::Maze maze(cli.size(), cli.seed());
 
     generate(maze, {0, 0});
-    output(maze, filename, output_format, zoom, info);
+    output(maze, cli.filename(), cli.output_format(), cli.zoom(), cli.info());
 }

@@ -2,7 +2,9 @@
 
 #include <random>
 
-#include "cli.hpp"
+#include "types.hpp"
+
+namespace maze_generator::maze_generator {
 
 class Maze {
 public:
@@ -23,10 +25,9 @@ public:
         int x, y;
     };
 
-    Maze(const int width, const int height, const int seed = -1)
-        : width_{width},
-          height_{height},
-          nodes_(static_cast<std::size_t>(width * height), static_cast<Node>(WallFlags::North) | static_cast<Node>(WallFlags::East) | static_cast<Node>(WallFlags::South) | static_cast<Node>(WallFlags::West)),
+    Maze(const Size size, const int seed = -1)
+        : size_{size},
+          nodes_(static_cast<std::size_t>(size_.width * size_.height), static_cast<Node>(WallFlags::North) | static_cast<Node>(WallFlags::East) | static_cast<Node>(WallFlags::South) | static_cast<Node>(WallFlags::West)),
           random_device_(),
           random_generator_(random_device_()),
           random_dist_{0, 23}
@@ -35,10 +36,9 @@ public:
         random_generator_.seed(seed_);
     }
 
-    int width() const { return width_; }
-    int height() const { return height_; }
+    [[nodiscard]] Size size() const { return size_; }
 
-    bool valid_coords(const Coordinates coords) const { return coords.x >= 0 && coords.y >= 0 && coords.x < width_ && coords.y < height_; }
+    bool valid_coords(const Coordinates coords) const { return coords.x >= 0 && coords.y >= 0 && coords.x < size_.width && coords.y < size_.height; }
 
     Coordinates coords_in_direction(const Coordinates coords, const Directions dir)
     {
@@ -48,7 +48,7 @@ public:
 
     const Directions* random_directions() { return all_possible_random_directions[random_dist_(random_generator_)]; }
 
-    Node& node(const Coordinates coords) { return nodes_[static_cast<std::size_t>(coords.y * width_ + coords.x)]; }
+    Node& node(const Coordinates coords) { return nodes_[static_cast<std::size_t>(coords.y * size_.width + coords.x)]; }
     bool node_visited(const Coordinates coords) { return node(coords) & 0b10000; }
     void set_node_visited(const Coordinates coords) { node(coords) |= 0b10000; }
 
@@ -64,8 +64,7 @@ public:
     std::random_device::result_type seed() const { return seed_; }
 
 private:
-    const int width_;
-    const int height_;
+    const Size size_;
     std::vector<Node> nodes_;
 
     std::random_device random_device_;
@@ -105,3 +104,5 @@ private:
 
 void generate(Maze& maze, const Maze::Coordinates starting_point);
 void output(Maze& maze, const std::string& filename, OutputFormat output_format, int zoom, bool show_info);
+
+}  // namespace maze_generator::maze_generator

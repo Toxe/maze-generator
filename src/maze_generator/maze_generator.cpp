@@ -4,6 +4,8 @@
 #include <iostream>
 #include <vector>
 
+namespace maze_generator::maze_generator {
+
 struct StackNode {
     StackNode(const Maze::Coordinates c, const Maze::Directions* d) : coords{c}, check_directions{d}, rnd_idx{0} { }
 
@@ -14,13 +16,15 @@ struct StackNode {
 
 void output_info(std::ostream& out, const Maze& maze, OutputFormat output_format, int zoom)
 {
-    out << "width=" << maze.width() << '\n';
-    out << "height=" << maze.height() << '\n';
+    const auto size = maze.size();
+
+    out << "width=" << size.width << '\n';
+    out << "height=" << size.height << '\n';
     out << "seed=" << maze.seed() << '\n';
 
     if (output_format == OutputFormat::Raw) {
-        out << "image width=" << (zoom * (2 * maze.width() + 1)) << '\n';
-        out << "image height=" << (zoom * (2 * maze.height() + 1)) << '\n';
+        out << "image width=" << (zoom * (2 * size.width + 1)) << '\n';
+        out << "image height=" << (zoom * (2 * size.height + 1)) << '\n';
         out << "image format=1 byte per pixel, grayscale\n";
     }
 }
@@ -51,8 +55,9 @@ void output(Maze& maze, const std::string& filename, OutputFormat output_format,
     }
 
     // create grid with wall data
-    const int grid_width = 2 * maze.width() + 1;
-    const int grid_height = 2 * maze.height() + 1;
+    const auto size = maze.size();
+    const int grid_width = 2 * size.width + 1;
+    const int grid_height = 2 * size.height + 1;
     std::vector<std::vector<Maze::Node>> grid(static_cast<std::size_t>(grid_height));
 
     for (std::size_t y = 0; y < static_cast<std::size_t>(grid_height); ++y) {
@@ -62,8 +67,8 @@ void output(Maze& maze, const std::string& filename, OutputFormat output_format,
             grid[y].push_back(0);
     }
 
-    for (std::size_t y = 0; y < static_cast<std::size_t>(maze.height()); ++y) {
-        for (std::size_t x = 0; x < static_cast<std::size_t>(maze.width()); ++x) {
+    for (std::size_t y = 0; y < static_cast<std::size_t>(size.height); ++y) {
+        for (std::size_t x = 0; x < static_cast<std::size_t>(size.width); ++x) {
             if (maze.has_wall({x, y}, Maze::WallFlags::North)) {
                 grid[2 * y][2 * x] |= static_cast<Maze::Node>(Maze::WallFlags::East);
                 grid[2 * y][2 * x + 1] |= static_cast<Maze::Node>(Maze::WallFlags::East) | static_cast<Maze::Node>(Maze::WallFlags::West);
@@ -137,14 +142,14 @@ void output(Maze& maze, const std::string& filename, OutputFormat output_format,
             out << '\n';
         }
     } else if (output_format == OutputFormat::Data) {
-        for (int y = 0; y < maze.height(); ++y) {
-            for (int x = 0; x < maze.width(); ++x) {
+        for (int y = 0; y < size.height; ++y) {
+            for (int x = 0; x < size.width; ++x) {
                 out << (maze.has_wall({x, y}, Maze::WallFlags::North) ? "N" : "-");
                 out << (maze.has_wall({x, y}, Maze::WallFlags::East) ? "E" : "-");
                 out << (maze.has_wall({x, y}, Maze::WallFlags::South) ? "S" : "-");
                 out << (maze.has_wall({x, y}, Maze::WallFlags::West) ? "W" : "-");
 
-                if (x < maze.width() - 1)
+                if (x < size.width - 1)
                     out << "|";
             }
 
@@ -185,3 +190,5 @@ void generate(Maze& maze, const Maze::Coordinates starting_point)
         }
     }
 }
+
+}  // namespace maze_generator::maze_generator
