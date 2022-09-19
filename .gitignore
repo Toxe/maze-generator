@@ -1,6 +1,17 @@
-build*
-.vscode
-.vs
-CMakeSettings.json
+# CLion
+/.idea
+/cmake-build*
+
+# Visual Studio
+/.vs
+/out
+/CMakeSettings.json
+
+# Visual Studio Code
+/.vscode
+
+# CMake
+/build*
+
 *.maze
 *.raw
