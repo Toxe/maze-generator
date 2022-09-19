@@ -1,7 +1,7 @@
 #include "maze_generator/command_line/command_line.hpp"
 #include "maze_generator/maze_generator.hpp"
 
-int main(int argc, char* argv[])
+int main(int argc, const char* argv[])
 {
     maze_generator::command_line::CommandLine cli(argc, argv);
 

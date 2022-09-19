@@ -1,6 +1,5 @@
 #pragma once
 
-#include <optional>
 #include <string>
 
 #include "types.hpp"
@@ -9,7 +8,7 @@ namespace maze_generator::command_line {
 
 class CommandLine {
 public:
-    CommandLine(int argc, char* argv[]);
+    CommandLine(int argc, const char* argv[]);
 
     [[nodiscard]] int seed() const { return seed_; }
     [[nodiscard]] int zoom() const { return zoom_; }

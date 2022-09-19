@@ -19,7 +19,7 @@ namespace maze_generator::command_line {
     std::exit(error ? app.exit(error.value()) : 0);
 }
 
-CommandLine::CommandLine(int argc, char* argv[])
+CommandLine::CommandLine(int argc, const char* argv[])
 {
     const char* description = "Maze Generator";
     int log_level_flag = 0;
