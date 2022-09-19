@@ -4,7 +4,7 @@
 
 #include "types.hpp"
 
-namespace maze_generator::maze_generator {
+namespace maze_generator {
 
 class Maze {
 public:
@@ -19,9 +19,9 @@ public:
         South = 0b0100,
         West = 0b1000 };
 
-    struct Coordinates {
-        Coordinates(const int ix, const int iy) : x{ix}, y{iy} { }
-        Coordinates(const std::size_t ix, const std::size_t iy) : x{static_cast<int>(ix)}, y{static_cast<int>(iy)} { }
+    struct Coords {
+        Coords(const int ix, const int iy) : x{ix}, y{iy} { }
+        Coords(const std::size_t ix, const std::size_t iy) : x{static_cast<int>(ix)}, y{static_cast<int>(iy)} { }
         int x, y;
     };
 
@@ -38,22 +38,22 @@ public:
 
     [[nodiscard]] Size size() const { return size_; }
 
-    bool valid_coords(const Coordinates coords) const { return coords.x >= 0 && coords.y >= 0 && coords.x < size_.width && coords.y < size_.height; }
+    bool valid_coords(const Coords coords) const { return coords.x >= 0 && coords.y >= 0 && coords.x < size_.width && coords.y < size_.height; }
 
-    Coordinates coords_in_direction(const Coordinates coords, const Directions dir)
+    Coords coords_in_direction(const Coords coords, const Directions dir)
     {
-        const Coordinates offset{direction_coords_offset_[static_cast<int>(dir)]};
-        return Coordinates{coords.x + offset.x, coords.y + offset.y};
+        const Coords offset{direction_coords_offset_[static_cast<int>(dir)]};
+        return Coords{coords.x + offset.x, coords.y + offset.y};
     }
 
     const Directions* random_directions() { return all_possible_random_directions[random_dist_(random_generator_)]; }
 
-    Node& node(const Coordinates coords) { return nodes_[static_cast<std::size_t>(coords.y * size_.width + coords.x)]; }
-    bool node_visited(const Coordinates coords) { return node(coords) & 0b10000; }
-    void set_node_visited(const Coordinates coords) { node(coords) |= 0b10000; }
+    Node& node(const Coords coords) { return nodes_[static_cast<std::size_t>(coords.y * size_.width + coords.x)]; }
+    bool node_visited(const Coords coords) { return node(coords) & 0b10000; }
+    void set_node_visited(const Coords coords) { node(coords) |= 0b10000; }
 
-    bool has_wall(const Coordinates coords, WallFlags wall) { return node(coords) & static_cast<Node>(wall); }
-    void clear_walls(const Coordinates orig, const Coordinates dest, Directions dir)
+    bool has_wall(const Coords coords, WallFlags wall) { return node(coords) & static_cast<Node>(wall); }
+    void clear_walls(const Coords orig, const Coords dest, Directions dir)
     {
         const WallFlags orig_wall = wall_in_direction_[static_cast<int>(dir)];
         const WallFlags dest_wall = wall_in_direction_[static_cast<int>(opposite_direction_[static_cast<int>(dir)])];
@@ -74,7 +74,7 @@ private:
 
     const WallFlags wall_in_direction_[4] = {WallFlags::North, WallFlags::East, WallFlags::South, WallFlags::West};
     const Directions opposite_direction_[4] = {Directions::South, Directions::West, Directions::North, Directions::East};
-    const Coordinates direction_coords_offset_[4] = {Coordinates{0, -1}, Coordinates{1, 0}, Coordinates{0, 1}, Coordinates{-1, 0}};
+    const Coords direction_coords_offset_[4] = {Coords{0, -1}, Coords{1, 0}, Coords{0, 1}, Coords{-1, 0}};
     const Directions all_possible_random_directions[24][4] = {
         {Directions::North, Directions::East, Directions::South, Directions::West},
         {Directions::North, Directions::East, Directions::West, Directions::South},
@@ -102,7 +102,4 @@ private:
         {Directions::West, Directions::South, Directions::East, Directions::North}};
 };
 
-void generate(Maze& maze, const Maze::Coordinates starting_point);
-void output(Maze& maze, const std::string& filename, OutputFormat output_format, int zoom, bool show_info);
-
-}  // namespace maze_generator::maze_generator
+}  // namespace maze_generator

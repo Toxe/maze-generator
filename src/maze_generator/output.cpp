@@ -1,26 +1,19 @@
-#include "maze_generator.hpp"
+#include "output.hpp"
 
 #include <fstream>
 #include <iostream>
-#include <vector>
 
-namespace maze_generator::maze_generator {
+#include "maze.hpp"
 
-struct StackNode {
-    StackNode(const Maze::Coordinates c, const Maze::Directions* d) : coords{c}, check_directions{d}, rnd_idx{0} { }
+namespace maze_generator {
 
-    const Maze::Coordinates coords;
-    const Maze::Directions* check_directions;
-    int rnd_idx;
-};
-
-void output_info(std::ostream& out, const Maze& maze, OutputFormat output_format, int zoom)
+void output_info(std::ostream& out, const Maze* maze, const OutputFormat output_format, const int zoom)
 {
-    const auto size = maze.size();
+    const auto size = maze->size();
 
     out << "width=" << size.width << '\n';
     out << "height=" << size.height << '\n';
-    out << "seed=" << maze.seed() << '\n';
+    out << "seed=" << maze->seed() << '\n';
 
     if (output_format == OutputFormat::Raw) {
         out << "image width=" << (zoom * (2 * size.width + 1)) << '\n';
@@ -29,7 +22,7 @@ void output_info(std::ostream& out, const Maze& maze, OutputFormat output_format
     }
 }
 
-void output(Maze& maze, const std::string& filename, OutputFormat output_format, int zoom, bool show_info)
+void output(Maze* maze, const std::string& filename, const OutputFormat output_format, const int zoom, const bool show_info)
 {
     std::streambuf* sbuf;
     std::ofstream out_file;
@@ -55,7 +48,7 @@ void output(Maze& maze, const std::string& filename, OutputFormat output_format,
     }
 
     // create grid with wall data
-    const auto size = maze.size();
+    const auto size = maze->size();
     const int grid_width = 2 * size.width + 1;
     const int grid_height = 2 * size.height + 1;
     std::vector<std::vector<Maze::Node>> grid(static_cast<std::size_t>(grid_height));
@@ -69,25 +62,25 @@ void output(Maze& maze, const std::string& filename, OutputFormat output_format,
 
     for (std::size_t y = 0; y < static_cast<std::size_t>(size.height); ++y) {
         for (std::size_t x = 0; x < static_cast<std::size_t>(size.width); ++x) {
-            if (maze.has_wall({x, y}, Maze::WallFlags::North)) {
+            if (maze->has_wall({x, y}, Maze::WallFlags::North)) {
                 grid[2 * y][2 * x] |= static_cast<Maze::Node>(Maze::WallFlags::East);
                 grid[2 * y][2 * x + 1] |= static_cast<Maze::Node>(Maze::WallFlags::East) | static_cast<Maze::Node>(Maze::WallFlags::West);
                 grid[2 * y][2 * x + 2] |= static_cast<Maze::Node>(Maze::WallFlags::West);
             }
 
-            if (maze.has_wall({x, y}, Maze::WallFlags::East)) {
+            if (maze->has_wall({x, y}, Maze::WallFlags::East)) {
                 grid[2 * y][2 * x + 2] |= static_cast<Maze::Node>(Maze::WallFlags::South);
                 grid[2 * y + 1][2 * x + 2] |= static_cast<Maze::Node>(Maze::WallFlags::North) | static_cast<Maze::Node>(Maze::WallFlags::South);
                 grid[2 * y + 2][2 * x + 2] |= static_cast<Maze::Node>(Maze::WallFlags::North);
             }
 
-            if (maze.has_wall({x, y}, Maze::WallFlags::South)) {
+            if (maze->has_wall({x, y}, Maze::WallFlags::South)) {
                 grid[2 * y + 2][2 * x] |= static_cast<Maze::Node>(Maze::WallFlags::East);
                 grid[2 * y + 2][2 * x + 1] |= static_cast<Maze::Node>(Maze::WallFlags::East) | static_cast<Maze::Node>(Maze::WallFlags::West);
                 grid[2 * y + 2][2 * x + 2] |= static_cast<Maze::Node>(Maze::WallFlags::West);
             }
 
-            if (maze.has_wall({x, y}, Maze::WallFlags::West)) {
+            if (maze->has_wall({x, y}, Maze::WallFlags::West)) {
                 grid[2 * y][2 * x] |= static_cast<Maze::Node>(Maze::WallFlags::South);
                 grid[2 * y + 1][2 * x] |= static_cast<Maze::Node>(Maze::WallFlags::North) | static_cast<Maze::Node>(Maze::WallFlags::South);
                 grid[2 * y + 2][2 * x] |= static_cast<Maze::Node>(Maze::WallFlags::North);
@@ -144,10 +137,10 @@ void output(Maze& maze, const std::string& filename, OutputFormat output_format,
     } else if (output_format == OutputFormat::Data) {
         for (int y = 0; y < size.height; ++y) {
             for (int x = 0; x < size.width; ++x) {
-                out << (maze.has_wall({x, y}, Maze::WallFlags::North) ? "N" : "-");
-                out << (maze.has_wall({x, y}, Maze::WallFlags::East) ? "E" : "-");
-                out << (maze.has_wall({x, y}, Maze::WallFlags::South) ? "S" : "-");
-                out << (maze.has_wall({x, y}, Maze::WallFlags::West) ? "W" : "-");
+                out << (maze->has_wall({x, y}, Maze::WallFlags::North) ? "N" : "-");
+                out << (maze->has_wall({x, y}, Maze::WallFlags::East) ? "E" : "-");
+                out << (maze->has_wall({x, y}, Maze::WallFlags::South) ? "S" : "-");
+                out << (maze->has_wall({x, y}, Maze::WallFlags::West) ? "W" : "-");
 
                 if (x < size.width - 1)
                     out << "|";
@@ -158,37 +151,4 @@ void output(Maze& maze, const std::string& filename, OutputFormat output_format,
     }
 }
 
-void generate(Maze& maze, const Maze::Coordinates starting_point)
-{
-    std::vector<StackNode> stack;
-
-    maze.set_node_visited(starting_point);
-    stack.emplace_back(starting_point, maze.random_directions());
-
-    while (!stack.empty()) {
-        StackNode& current_node = stack.back();
-
-        if (current_node.rnd_idx < 4) {
-            bool keep_checking = true;
-
-            while (keep_checking && current_node.rnd_idx < 4) {
-                const auto dir = current_node.check_directions[current_node.rnd_idx];
-                ++current_node.rnd_idx;
-
-                Maze::Coordinates next_coords{maze.coords_in_direction(current_node.coords, dir)};
-
-                if (maze.valid_coords(next_coords) && !maze.node_visited(next_coords)) {
-                    maze.clear_walls(current_node.coords, next_coords, dir);
-                    maze.set_node_visited(next_coords);
-
-                    stack.emplace_back(next_coords, maze.random_directions());
-                    keep_checking = false;
-                }
-            }
-        } else {
-            stack.pop_back();
-        }
-    }
-}
-
-}  // namespace maze_generator::maze_generator
+}  // namespace maze_generator

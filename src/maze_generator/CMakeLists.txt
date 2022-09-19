@@ -1,11 +1,15 @@
 add_library(LIB_maze_generator
         command_line/command_line.cpp
         command_line/command_line.hpp
+        generate.cpp
+        generate.hpp
         include/types.hpp
         logger/logger.cpp
         logger/logger.hpp
-        maze_generator.cpp
-        maze_generator.hpp
+        maze.cpp
+        maze.hpp
+        output.cpp
+        output.hpp
         )
 
 set_target_properties(LIB_maze_generator PROPERTIES CXX_EXTENSIONS OFF)
