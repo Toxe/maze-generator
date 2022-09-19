@@ -29,8 +29,8 @@ CommandLine::CommandLine(int argc, char* argv[])
     bool format_raw = false;
 
     CLI::App app{description};
-    app.add_option("width", size_.width, "maze width")->required();
-    app.add_option("height", size_.height, "maze height")->required();
+    app.add_option("width", size_.width, fmt::format("maze width (default: {})", size_.width));
+    app.add_option("height", size_.height, fmt::format("maze height (default: {})", size_.height));
     app.add_option("filename", filename_, "output filename");
     app.add_option("-s,--seed", seed_, "random seed (0 or bigger)");
     app.add_option("-z,--zoom", zoom_, fmt::format("pixel zoom factor for .raw files (default: {})", zoom_));

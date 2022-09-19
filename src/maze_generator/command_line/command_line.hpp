@@ -27,7 +27,7 @@ private:
     bool info_ = false;
 
     OutputFormat output_format_;
-    Size size_{0, 0};
+    Size size_{10, 10};
 
     std::string filename_;
 };
