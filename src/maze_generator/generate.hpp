@@ -7,6 +7,6 @@
 
 namespace maze_generator {
 
-std::unique_ptr<maze_generator::Maze> generate(Size size, int random_seed, Maze::Coords starting_point);
+std::unique_ptr<maze_generator::Maze> generate(Size size, int random_seed, Coords starting_point);
 
 }  // namespace maze_generator

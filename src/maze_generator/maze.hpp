@@ -10,24 +10,9 @@ class Maze {
 public:
     using Node = unsigned char;
 
-    enum class Directions { North = 0,
-        East,
-        South,
-        West };
-    enum class WallFlags { North = 0b0001,
-        East = 0b0010,
-        South = 0b0100,
-        West = 0b1000 };
-
-    struct Coords {
-        Coords(const int ix, const int iy) : x{ix}, y{iy} { }
-        Coords(const std::size_t ix, const std::size_t iy) : x{static_cast<int>(ix)}, y{static_cast<int>(iy)} { }
-        int x, y;
-    };
-
     Maze(const Size size, const int seed = -1)
         : size_{size},
-          nodes_(static_cast<std::size_t>(size_.width * size_.height), static_cast<Node>(WallFlags::North) | static_cast<Node>(WallFlags::East) | static_cast<Node>(WallFlags::South) | static_cast<Node>(WallFlags::West)),
+          nodes_(static_cast<std::size_t>(size_.width * size_.height), static_cast<Node>(Wall::North) | static_cast<Node>(Wall::East) | static_cast<Node>(Wall::South) | static_cast<Node>(Wall::West)),
           random_device_(),
           random_generator_(random_device_()),
           random_dist_{0, 23}
@@ -40,23 +25,23 @@ public:
 
     bool valid_coords(const Coords coords) const { return coords.x >= 0 && coords.y >= 0 && coords.x < size_.width && coords.y < size_.height; }
 
-    Coords coords_in_direction(const Coords coords, const Directions dir)
+    Coords coords_in_direction(const Coords coords, const Direction dir)
     {
         const Coords offset{direction_coords_offset_[static_cast<int>(dir)]};
         return Coords{coords.x + offset.x, coords.y + offset.y};
     }
 
-    const Directions* random_directions() { return all_possible_random_directions[random_dist_(random_generator_)]; }
+    const Direction* random_directions() { return all_possible_random_directions[random_dist_(random_generator_)]; }
 
     Node& node(const Coords coords) { return nodes_[static_cast<std::size_t>(coords.y * size_.width + coords.x)]; }
     bool node_visited(const Coords coords) { return node(coords) & 0b10000; }
     void set_node_visited(const Coords coords) { node(coords) |= 0b10000; }
 
-    bool has_wall(const Coords coords, WallFlags wall) { return node(coords) & static_cast<Node>(wall); }
-    void clear_walls(const Coords orig, const Coords dest, Directions dir)
+    bool has_wall(const Coords coords, Wall wall) { return node(coords) & static_cast<Node>(wall); }
+    void clear_walls(const Coords orig, const Coords dest, Direction dir)
     {
-        const WallFlags orig_wall = wall_in_direction_[static_cast<int>(dir)];
-        const WallFlags dest_wall = wall_in_direction_[static_cast<int>(opposite_direction_[static_cast<int>(dir)])];
+        const Wall orig_wall = wall_in_direction_[static_cast<int>(dir)];
+        const Wall dest_wall = wall_in_direction_[static_cast<int>(opposite_direction_[static_cast<int>(dir)])];
         node(orig) &= ~(static_cast<Node>(orig_wall));
         node(dest) &= ~(static_cast<Node>(dest_wall));
     }
@@ -72,34 +57,34 @@ private:
     std::mt19937 random_generator_;
     std::uniform_int_distribution<> random_dist_;
 
-    const WallFlags wall_in_direction_[4] = {WallFlags::North, WallFlags::East, WallFlags::South, WallFlags::West};
-    const Directions opposite_direction_[4] = {Directions::South, Directions::West, Directions::North, Directions::East};
+    const Wall wall_in_direction_[4] = {Wall::North, Wall::East, Wall::South, Wall::West};
+    const Direction opposite_direction_[4] = {Direction::South, Direction::West, Direction::North, Direction::East};
     const Coords direction_coords_offset_[4] = {Coords{0, -1}, Coords{1, 0}, Coords{0, 1}, Coords{-1, 0}};
-    const Directions all_possible_random_directions[24][4] = {
-        {Directions::North, Directions::East, Directions::South, Directions::West},
-        {Directions::North, Directions::East, Directions::West, Directions::South},
-        {Directions::North, Directions::South, Directions::East, Directions::West},
-        {Directions::North, Directions::South, Directions::West, Directions::East},
-        {Directions::North, Directions::West, Directions::East, Directions::South},
-        {Directions::North, Directions::West, Directions::South, Directions::East},
-        {Directions::East, Directions::North, Directions::South, Directions::West},
-        {Directions::East, Directions::North, Directions::West, Directions::South},
-        {Directions::East, Directions::South, Directions::North, Directions::West},
-        {Directions::East, Directions::South, Directions::West, Directions::North},
-        {Directions::East, Directions::West, Directions::North, Directions::South},
-        {Directions::East, Directions::West, Directions::South, Directions::North},
-        {Directions::South, Directions::North, Directions::East, Directions::West},
-        {Directions::South, Directions::North, Directions::West, Directions::East},
-        {Directions::South, Directions::East, Directions::North, Directions::West},
-        {Directions::South, Directions::East, Directions::West, Directions::North},
-        {Directions::South, Directions::West, Directions::North, Directions::East},
-        {Directions::South, Directions::West, Directions::East, Directions::North},
-        {Directions::West, Directions::North, Directions::East, Directions::South},
-        {Directions::West, Directions::North, Directions::South, Directions::East},
-        {Directions::West, Directions::East, Directions::North, Directions::South},
-        {Directions::West, Directions::East, Directions::South, Directions::North},
-        {Directions::West, Directions::South, Directions::North, Directions::East},
-        {Directions::West, Directions::South, Directions::East, Directions::North}};
+    const Direction all_possible_random_directions[24][4] = {
+        {Direction::North, Direction::East, Direction::South, Direction::West},
+        {Direction::North, Direction::East, Direction::West, Direction::South},
+        {Direction::North, Direction::South, Direction::East, Direction::West},
+        {Direction::North, Direction::South, Direction::West, Direction::East},
+        {Direction::North, Direction::West, Direction::East, Direction::South},
+        {Direction::North, Direction::West, Direction::South, Direction::East},
+        {Direction::East, Direction::North, Direction::South, Direction::West},
+        {Direction::East, Direction::North, Direction::West, Direction::South},
+        {Direction::East, Direction::South, Direction::North, Direction::West},
+        {Direction::East, Direction::South, Direction::West, Direction::North},
+        {Direction::East, Direction::West, Direction::North, Direction::South},
+        {Direction::East, Direction::West, Direction::South, Direction::North},
+        {Direction::South, Direction::North, Direction::East, Direction::West},
+        {Direction::South, Direction::North, Direction::West, Direction::East},
+        {Direction::South, Direction::East, Direction::North, Direction::West},
+        {Direction::South, Direction::East, Direction::West, Direction::North},
+        {Direction::South, Direction::West, Direction::North, Direction::East},
+        {Direction::South, Direction::West, Direction::East, Direction::North},
+        {Direction::West, Direction::North, Direction::East, Direction::South},
+        {Direction::West, Direction::North, Direction::South, Direction::East},
+        {Direction::West, Direction::East, Direction::North, Direction::South},
+        {Direction::West, Direction::East, Direction::South, Direction::North},
+        {Direction::West, Direction::South, Direction::North, Direction::East},
+        {Direction::West, Direction::South, Direction::East, Direction::North}};
 };
 
 }  // namespace maze_generator

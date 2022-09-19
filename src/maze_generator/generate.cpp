@@ -5,14 +5,14 @@
 namespace maze_generator {
 
 struct StackNode {
-    StackNode(const Maze::Coords c, const Maze::Directions* d) : coords{c}, check_directions{d}, rnd_idx{0} { }
-
-    const Maze::Coords coords;
-    const Maze::Directions* check_directions;
+    const Coords coords;
+    const Direction* check_directions;
     int rnd_idx;
+
+    StackNode(const Coords c, const Direction* d) : coords{c}, check_directions{d}, rnd_idx{0} { }
 };
 
-std::unique_ptr<maze_generator::Maze> generate(const Size size, const int random_seed, const Maze::Coords starting_point)
+std::unique_ptr<maze_generator::Maze> generate(const Size size, const int random_seed, const Coords starting_point)
 {
     std::vector<StackNode> stack;
 
@@ -31,7 +31,7 @@ std::unique_ptr<maze_generator::Maze> generate(const Size size, const int random
                 const auto dir = current_node.check_directions[current_node.rnd_idx];
                 ++current_node.rnd_idx;
 
-                Maze::Coords next_coords{maze->coords_in_direction(current_node.coords, dir)};
+                Coords next_coords{maze->coords_in_direction(current_node.coords, dir)};
 
                 if (maze->valid_coords(next_coords) && !maze->node_visited(next_coords)) {
                     maze->clear_walls(current_node.coords, next_coords, dir);

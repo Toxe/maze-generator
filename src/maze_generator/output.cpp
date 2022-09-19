@@ -62,28 +62,28 @@ void output(Maze* maze, const std::string& filename, const OutputFormat output_f
 
     for (std::size_t y = 0; y < static_cast<std::size_t>(size.height); ++y) {
         for (std::size_t x = 0; x < static_cast<std::size_t>(size.width); ++x) {
-            if (maze->has_wall({x, y}, Maze::WallFlags::North)) {
-                grid[2 * y][2 * x] |= static_cast<Maze::Node>(Maze::WallFlags::East);
-                grid[2 * y][2 * x + 1] |= static_cast<Maze::Node>(Maze::WallFlags::East) | static_cast<Maze::Node>(Maze::WallFlags::West);
-                grid[2 * y][2 * x + 2] |= static_cast<Maze::Node>(Maze::WallFlags::West);
+            if (maze->has_wall({x, y}, Wall::North)) {
+                grid[2 * y][2 * x] |= static_cast<Maze::Node>(Wall::East);
+                grid[2 * y][2 * x + 1] |= static_cast<Maze::Node>(Wall::East) | static_cast<Maze::Node>(Wall::West);
+                grid[2 * y][2 * x + 2] |= static_cast<Maze::Node>(Wall::West);
             }
 
-            if (maze->has_wall({x, y}, Maze::WallFlags::East)) {
-                grid[2 * y][2 * x + 2] |= static_cast<Maze::Node>(Maze::WallFlags::South);
-                grid[2 * y + 1][2 * x + 2] |= static_cast<Maze::Node>(Maze::WallFlags::North) | static_cast<Maze::Node>(Maze::WallFlags::South);
-                grid[2 * y + 2][2 * x + 2] |= static_cast<Maze::Node>(Maze::WallFlags::North);
+            if (maze->has_wall({x, y}, Wall::East)) {
+                grid[2 * y][2 * x + 2] |= static_cast<Maze::Node>(Wall::South);
+                grid[2 * y + 1][2 * x + 2] |= static_cast<Maze::Node>(Wall::North) | static_cast<Maze::Node>(Wall::South);
+                grid[2 * y + 2][2 * x + 2] |= static_cast<Maze::Node>(Wall::North);
             }
 
-            if (maze->has_wall({x, y}, Maze::WallFlags::South)) {
-                grid[2 * y + 2][2 * x] |= static_cast<Maze::Node>(Maze::WallFlags::East);
-                grid[2 * y + 2][2 * x + 1] |= static_cast<Maze::Node>(Maze::WallFlags::East) | static_cast<Maze::Node>(Maze::WallFlags::West);
-                grid[2 * y + 2][2 * x + 2] |= static_cast<Maze::Node>(Maze::WallFlags::West);
+            if (maze->has_wall({x, y}, Wall::South)) {
+                grid[2 * y + 2][2 * x] |= static_cast<Maze::Node>(Wall::East);
+                grid[2 * y + 2][2 * x + 1] |= static_cast<Maze::Node>(Wall::East) | static_cast<Maze::Node>(Wall::West);
+                grid[2 * y + 2][2 * x + 2] |= static_cast<Maze::Node>(Wall::West);
             }
 
-            if (maze->has_wall({x, y}, Maze::WallFlags::West)) {
-                grid[2 * y][2 * x] |= static_cast<Maze::Node>(Maze::WallFlags::South);
-                grid[2 * y + 1][2 * x] |= static_cast<Maze::Node>(Maze::WallFlags::North) | static_cast<Maze::Node>(Maze::WallFlags::South);
-                grid[2 * y + 2][2 * x] |= static_cast<Maze::Node>(Maze::WallFlags::North);
+            if (maze->has_wall({x, y}, Wall::West)) {
+                grid[2 * y][2 * x] |= static_cast<Maze::Node>(Wall::South);
+                grid[2 * y + 1][2 * x] |= static_cast<Maze::Node>(Wall::North) | static_cast<Maze::Node>(Wall::South);
+                grid[2 * y + 2][2 * x] |= static_cast<Maze::Node>(Wall::North);
             }
         }
     }
@@ -137,10 +137,10 @@ void output(Maze* maze, const std::string& filename, const OutputFormat output_f
     } else if (output_format == OutputFormat::Data) {
         for (int y = 0; y < size.height; ++y) {
             for (int x = 0; x < size.width; ++x) {
-                out << (maze->has_wall({x, y}, Maze::WallFlags::North) ? "N" : "-");
-                out << (maze->has_wall({x, y}, Maze::WallFlags::East) ? "E" : "-");
-                out << (maze->has_wall({x, y}, Maze::WallFlags::South) ? "S" : "-");
-                out << (maze->has_wall({x, y}, Maze::WallFlags::West) ? "W" : "-");
+                out << (maze->has_wall({x, y}, Wall::North) ? "N" : "-");
+                out << (maze->has_wall({x, y}, Wall::East) ? "E" : "-");
+                out << (maze->has_wall({x, y}, Wall::South) ? "S" : "-");
+                out << (maze->has_wall({x, y}, Wall::West) ? "W" : "-");
 
                 if (x < size.width - 1)
                     out << "|";
