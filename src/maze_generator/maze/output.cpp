@@ -5,7 +5,7 @@
 
 #include "maze.hpp"
 
-namespace maze_generator {
+namespace maze_generator::maze {
 
 void output_info(std::ostream& out, const Maze* maze, const OutputFormat output_format, const int zoom)
 {
@@ -151,4 +151,4 @@ void output(Maze* maze, const std::string& filename, const OutputFormat output_f
     }
 }
 
-}  // namespace maze_generator
+}  // namespace maze_generator::maze

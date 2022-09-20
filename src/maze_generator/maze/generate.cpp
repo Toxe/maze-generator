@@ -2,7 +2,7 @@
 
 #include <vector>
 
-namespace maze_generator {
+namespace maze_generator::maze {
 
 struct StackNode {
     const Coords coords;
@@ -12,11 +12,11 @@ struct StackNode {
     StackNode(const Coords c, const Direction* d) : coords{c}, check_directions{d}, rnd_idx{0} { }
 };
 
-std::unique_ptr<maze_generator::Maze> generate(const Size size, const int random_seed, const Coords starting_point)
+std::unique_ptr<maze_generator::maze::Maze> generate(const Size size, const int random_seed, const Coords starting_point)
 {
     std::vector<StackNode> stack;
 
-    std::unique_ptr<maze_generator::Maze> maze = std::make_unique<maze_generator::Maze>(size, random_seed);
+    std::unique_ptr<maze_generator::maze::Maze> maze = std::make_unique<maze_generator::maze::Maze>(size, random_seed);
 
     maze->set_node_visited(starting_point);
     stack.emplace_back(starting_point, maze->random_directions());
@@ -49,4 +49,4 @@ std::unique_ptr<maze_generator::Maze> generate(const Size size, const int random
     return maze;
 }
 
-}  // namespace maze_generator
+}  // namespace maze_generator::maze

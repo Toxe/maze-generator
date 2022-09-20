@@ -4,7 +4,7 @@
 
 #include "types.hpp"
 
-namespace maze_generator {
+namespace maze_generator::maze {
 
 class Maze {
 public:
@@ -87,4 +87,4 @@ private:
         {Direction::West, Direction::South, Direction::East, Direction::North}};
 };
 
-}  // namespace maze_generator
+}  // namespace maze_generator::maze
