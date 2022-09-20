@@ -4,6 +4,10 @@
     "builtin-baseline": "82601c43686f3ab5703cec30ee84986bdd146372",
     "dependencies": [
         {
+            "name": "benchmark",
+            "version>=": "1.6.1"
+        },
+        {
             "name": "catch2",
             "version>=": "3.0.1#2"
         },
