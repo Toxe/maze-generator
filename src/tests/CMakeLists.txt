@@ -2,6 +2,8 @@
 if (BUILD_TESTING)
     add_executable(maze_generator_tests
             ../maze_generator/command_line/command_line.test.cpp
+            ../maze_generator/output_target/output_target.test.cpp
+            ../maze_generator/output_writer/output_writer.test.cpp
             )
 
     set_target_properties(maze_generator_tests PROPERTIES CXX_EXTENSIONS OFF)

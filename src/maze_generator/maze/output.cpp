@@ -1,54 +1,30 @@
 #include "output.hpp"
 
-#include <fstream>
 #include <iostream>
 
 #include "maze.hpp"
 
 namespace maze_generator::maze {
 
-void output_info(std::ostream& out, const Maze* maze, const OutputFormat output_format, const int zoom)
+void show_info(const Maze& maze, const OutputFormat output_format, const int zoom)
 {
-    const auto size = maze->size();
+    const auto size = maze.size();
 
-    out << "width=" << size.width << '\n';
-    out << "height=" << size.height << '\n';
-    out << "seed=" << maze->seed() << '\n';
+    std::cout << "width: " << size.width << '\n';
+    std::cout << "height: " << size.height << '\n';
+    std::cout << "seed: " << maze.seed() << '\n';
 
     if (output_format == OutputFormat::Raw) {
-        out << "image width=" << (zoom * (2 * size.width + 1)) << '\n';
-        out << "image height=" << (zoom * (2 * size.height + 1)) << '\n';
-        out << "image format=1 byte per pixel, grayscale\n";
+        std::cout << "image width: " << (zoom * (2 * size.width + 1)) << '\n';
+        std::cout << "image height: " << (zoom * (2 * size.height + 1)) << '\n';
+        std::cout << "image format: 1 byte per pixel, grayscale\n";
     }
 }
 
-void output(Maze* maze, const std::string& filename, const OutputFormat output_format, const int zoom, const bool show_info)
+void output(Maze& maze, const OutputFormat output_format, const int zoom, output_writer::OutputWriter& out)
 {
-    std::streambuf* sbuf;
-    std::ofstream out_file;
-
-    // write output to either file or stdout
-    if (filename != "") {
-        out_file.open(filename, std::ofstream::binary);
-        sbuf = out_file.rdbuf();
-    } else {
-        sbuf = std::cout.rdbuf();
-    }
-
-    std::ostream out(sbuf);
-
-    if (show_info) {
-        if (output_format == OutputFormat::Raw) {
-            // info in Raw mode always goes to stdout and only if writing maze data to a file
-            if (filename != "")
-                output_info(std::cout, maze, output_format, zoom);
-        } else {
-            output_info(out, maze, output_format, zoom);
-        }
-    }
-
     // create grid with wall data
-    const auto size = maze->size();
+    const auto size = maze.size();
     const int grid_width = 2 * size.width + 1;
     const int grid_height = 2 * size.height + 1;
     std::vector<std::vector<Maze::Node>> grid(static_cast<std::size_t>(grid_height));
@@ -62,25 +38,25 @@ void output(Maze* maze, const std::string& filename, const OutputFormat output_f
 
     for (std::size_t y = 0; y < static_cast<std::size_t>(size.height); ++y) {
         for (std::size_t x = 0; x < static_cast<std::size_t>(size.width); ++x) {
-            if (maze->has_wall({x, y}, Wall::North)) {
+            if (maze.has_wall({x, y}, Wall::North)) {
                 grid[2 * y][2 * x] |= static_cast<Maze::Node>(Wall::East);
                 grid[2 * y][2 * x + 1] |= static_cast<Maze::Node>(Wall::East) | static_cast<Maze::Node>(Wall::West);
                 grid[2 * y][2 * x + 2] |= static_cast<Maze::Node>(Wall::West);
             }
 
-            if (maze->has_wall({x, y}, Wall::East)) {
+            if (maze.has_wall({x, y}, Wall::East)) {
                 grid[2 * y][2 * x + 2] |= static_cast<Maze::Node>(Wall::South);
                 grid[2 * y + 1][2 * x + 2] |= static_cast<Maze::Node>(Wall::North) | static_cast<Maze::Node>(Wall::South);
                 grid[2 * y + 2][2 * x + 2] |= static_cast<Maze::Node>(Wall::North);
             }
 
-            if (maze->has_wall({x, y}, Wall::South)) {
+            if (maze.has_wall({x, y}, Wall::South)) {
                 grid[2 * y + 2][2 * x] |= static_cast<Maze::Node>(Wall::East);
                 grid[2 * y + 2][2 * x + 1] |= static_cast<Maze::Node>(Wall::East) | static_cast<Maze::Node>(Wall::West);
                 grid[2 * y + 2][2 * x + 2] |= static_cast<Maze::Node>(Wall::West);
             }
 
-            if (maze->has_wall({x, y}, Wall::West)) {
+            if (maze.has_wall({x, y}, Wall::West)) {
                 grid[2 * y][2 * x] |= static_cast<Maze::Node>(Wall::South);
                 grid[2 * y + 1][2 * x] |= static_cast<Maze::Node>(Wall::North) | static_cast<Maze::Node>(Wall::South);
                 grid[2 * y + 2][2 * x] |= static_cast<Maze::Node>(Wall::North);
@@ -137,10 +113,10 @@ void output(Maze* maze, const std::string& filename, const OutputFormat output_f
     } else if (output_format == OutputFormat::Data) {
         for (int y = 0; y < size.height; ++y) {
             for (int x = 0; x < size.width; ++x) {
-                out << (maze->has_wall({x, y}, Wall::North) ? "N" : "-");
-                out << (maze->has_wall({x, y}, Wall::East) ? "E" : "-");
-                out << (maze->has_wall({x, y}, Wall::South) ? "S" : "-");
-                out << (maze->has_wall({x, y}, Wall::West) ? "W" : "-");
+                out << (maze.has_wall({x, y}, Wall::North) ? "N" : "-");
+                out << (maze.has_wall({x, y}, Wall::East) ? "E" : "-");
+                out << (maze.has_wall({x, y}, Wall::South) ? "S" : "-");
+                out << (maze.has_wall({x, y}, Wall::West) ? "W" : "-");
 
                 if (x < size.width - 1)
                     out << "|";

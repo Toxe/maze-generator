@@ -13,8 +13,11 @@ static void BM_output(benchmark::State& state, OutputFormat output_format, int z
     const Size size{static_cast<int>(state.range(0)), static_cast<int>(state.range(0))};
     const auto maze = maze::generate(size, random_seed, starting_point);
 
+    auto output_target = maze_generator::output_target::create_null_output_target();
+    auto output_writer = maze_generator::output_writer::create_output_writer(*output_target, output_format);
+
     for (auto _ : state)
-        maze::output(maze.get(), "", output_format, zoom, false);
+        maze::output(*maze, output_format, zoom, *output_writer);
 }
 
 BENCHMARK_CAPTURE(BM_output, text, OutputFormat::Text, 1)->RangeMultiplier(4)->Range(1, 1024);
