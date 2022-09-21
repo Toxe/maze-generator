@@ -1,6 +1,7 @@
 #include "command_line.hpp"
 
 #include <cstdlib>
+#include <optional>
 
 #include "CLI/App.hpp"
 #include "CLI/Config.hpp"
