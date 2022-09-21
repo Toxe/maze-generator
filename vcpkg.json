@@ -20,10 +20,6 @@
             "version>=": "2.1.1"
         },
         {
-            "name": "fmt",
-            "version>=": "8.1.1#1"
-        },
-        {
             "name": "spdlog",
             "version>=": "1.10.0#1"
         }
