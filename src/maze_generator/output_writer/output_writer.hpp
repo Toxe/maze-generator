@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <ostream>
 
 #include "../output_target/output_target.hpp"
 #include "types.hpp"

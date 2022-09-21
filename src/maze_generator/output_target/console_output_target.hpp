@@ -1,5 +1,7 @@
 #pragma once
 
+#include <iostream>
+
 #include "output_target.hpp"
 
 namespace maze_generator::output_target {

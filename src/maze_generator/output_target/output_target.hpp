@@ -1,7 +1,7 @@
 #pragma once
 
-#include <iostream>
 #include <memory>
+#include <streambuf>
 #include <string>
 
 namespace maze_generator::output_target {
