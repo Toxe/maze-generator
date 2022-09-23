@@ -1,8 +1,8 @@
 #include "output_target.hpp"
 
-#include "console_output_target.hpp"
-#include "file_output_target.hpp"
-#include "null_output_target.hpp"
+#include "targets/console_output_target.hpp"
+#include "targets/file_output_target.hpp"
+#include "targets/null_output_target.hpp"
 
 namespace maze_generator::output_target {
 

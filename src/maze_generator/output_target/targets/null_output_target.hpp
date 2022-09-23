@@ -1,6 +1,6 @@
 #pragma once
 
-#include "output_target.hpp"
+#include "../output_target.hpp"
 
 namespace maze_generator::output_target {
 
