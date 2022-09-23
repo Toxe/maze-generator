@@ -8,7 +8,7 @@ namespace maze_generator::maze {
 
 class Maze {
 public:
-    using Node = unsigned char;
+    using Node = uint8_t;
 
     Maze(const Size size, const int seed = -1)
         : size_{size},
