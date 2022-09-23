@@ -25,7 +25,7 @@ struct Coords {
     int x, y;
 
     Coords(int point_x, int point_y) : x{point_x}, y{point_y} { }
-    Coords(std::size_t point_x, std::size_t point_y) : x{static_cast<int>(point_x)}, y{static_cast<int>(point_y)} { }
+    Coords(size_t point_x, size_t point_y) : x{static_cast<int>(point_x)}, y{static_cast<int>(point_y)} { }
 };
 
 enum class Direction {
@@ -34,5 +34,8 @@ enum class Direction {
     South,
     West
 };
+
+constexpr uint8_t operator|(const Wall lhs, const Wall rhs) { return static_cast<uint8_t>(lhs) | static_cast<uint8_t>(rhs); }
+constexpr uint8_t operator|(const uint8_t lhs, const Wall rhs) { return lhs | static_cast<uint8_t>(rhs); }
 
 }  // namespace maze_generator

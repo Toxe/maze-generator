@@ -12,7 +12,7 @@ void maze_generator::output_writer::RawOutputWriter::output_maze(maze::Maze& maz
     for (int y = 0; y < size.height; ++y) {
         for (int r = 0; r < zoom; ++r) {
             for (int x = 0; x < size.width; ++x) {
-                if (maze.has_wall({x, y}, Wall::North)) {
+                if (maze.node({x, y}).has_wall(Wall::North)) {
                     for (int z = 0; z < zoom; ++z) {
                         write(white);
                         write(white);
@@ -32,7 +32,7 @@ void maze_generator::output_writer::RawOutputWriter::output_maze(maze::Maze& maz
 
         for (int r = 0; r < zoom; ++r) {
             for (int x = 0; x < size.width; ++x) {
-                if (maze.has_wall({x, y}, Wall::West)) {
+                if (maze.node({x, y}).has_wall(Wall::West)) {
                     for (int z = 0; z < zoom; ++z)
                         write(white);
 

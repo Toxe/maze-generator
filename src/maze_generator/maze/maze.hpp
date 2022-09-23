@@ -2,17 +2,16 @@
 
 #include <random>
 
+#include "node.hpp"
 #include "types.hpp"
 
 namespace maze_generator::maze {
 
 class Maze {
 public:
-    using Node = uint8_t;
-
     Maze(const Size size, const int seed = -1)
         : size_{size},
-          nodes_(static_cast<std::size_t>(size_.width * size_.height), static_cast<Node>(Wall::North) | static_cast<Node>(Wall::East) | static_cast<Node>(Wall::South) | static_cast<Node>(Wall::West)),
+          nodes_(static_cast<std::size_t>(size_.width * size_.height), Node::with_all_walls()),
           random_device_(),
           random_generator_(random_device_()),
           random_dist_{0, 23}
@@ -34,16 +33,14 @@ public:
     const Direction* random_directions() { return all_possible_random_directions[random_dist_(random_generator_)]; }
 
     Node& node(const Coords coords) { return nodes_[static_cast<std::size_t>(coords.y * size_.width + coords.x)]; }
-    bool node_visited(const Coords coords) { return node(coords) & 0b10000; }
-    void set_node_visited(const Coords coords) { node(coords) |= 0b10000; }
 
-    bool has_wall(const Coords coords, Wall wall) { return node(coords) & static_cast<Node>(wall); }
     void clear_walls(const Coords orig, const Coords dest, Direction dir)
     {
         const Wall orig_wall = wall_in_direction_[static_cast<int>(dir)];
         const Wall dest_wall = wall_in_direction_[static_cast<int>(opposite_direction_[static_cast<int>(dir)])];
-        node(orig) &= ~(static_cast<Node>(orig_wall));
-        node(dest) &= ~(static_cast<Node>(dest_wall));
+
+        node(orig).clear_wall(orig_wall);
+        node(dest).clear_wall(dest_wall);
     }
 
     std::random_device::result_type seed() const { return seed_; }

@@ -18,7 +18,7 @@ std::unique_ptr<maze_generator::maze::Maze> generate(const Size size, const int 
 
     std::unique_ptr<maze_generator::maze::Maze> maze = std::make_unique<maze_generator::maze::Maze>(size, random_seed);
 
-    maze->set_node_visited(starting_point);
+    maze->node(starting_point).set_visited();
     stack.emplace_back(starting_point, maze->random_directions());
 
     while (!stack.empty()) {
@@ -33,9 +33,9 @@ std::unique_ptr<maze_generator::maze::Maze> generate(const Size size, const int 
 
                 Coords next_coords{maze->coords_in_direction(current_node.coords, dir)};
 
-                if (maze->valid_coords(next_coords) && !maze->node_visited(next_coords)) {
+                if (maze->valid_coords(next_coords) && !maze->node(next_coords).visited()) {
                     maze->clear_walls(current_node.coords, next_coords, dir);
-                    maze->set_node_visited(next_coords);
+                    maze->node(next_coords).set_visited();
 
                     stack.emplace_back(next_coords, maze->random_directions());
                     keep_checking = false;

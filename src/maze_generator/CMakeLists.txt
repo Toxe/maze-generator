@@ -9,6 +9,7 @@ add_library(LIB_maze_generator
         maze/generate.hpp
         maze/maze.cpp
         maze/maze.hpp
+        maze/node.hpp
         output_target/output_target.cpp
         output_target/output_target.hpp
         output_target/targets/console_output_target.hpp

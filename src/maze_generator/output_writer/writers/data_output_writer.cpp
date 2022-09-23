@@ -6,10 +6,10 @@ void maze_generator::output_writer::DataOutputWriter::output_maze(maze::Maze& ma
 
     for (int y = 0; y < size.height; ++y) {
         for (int x = 0; x < size.width; ++x) {
-            write(maze.has_wall({x, y}, Wall::North) ? 'N' : '-');
-            write(maze.has_wall({x, y}, Wall::East) ? 'E' : '-');
-            write(maze.has_wall({x, y}, Wall::South) ? 'S' : '-');
-            write(maze.has_wall({x, y}, Wall::West) ? 'W' : '-');
+            write(maze.node({x, y}).has_wall(Wall::North) ? 'N' : '-');
+            write(maze.node({x, y}).has_wall(Wall::East) ? 'E' : '-');
+            write(maze.node({x, y}).has_wall(Wall::South) ? 'S' : '-');
+            write(maze.node({x, y}).has_wall(Wall::West) ? 'W' : '-');
 
             if (x < size.width - 1)
                 write('|');
