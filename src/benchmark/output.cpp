@@ -17,7 +17,7 @@ static void BM_output(benchmark::State& state, OutputFormat output_format, int z
     auto output_writer = maze_generator::output_writer::create_output_writer(*output_target, output_format);
 
     for (auto _ : state)
-        maze::output(*maze, output_format, zoom, *output_writer);
+        output_writer->output_maze(*maze, zoom);
 }
 
 BENCHMARK_CAPTURE(BM_output, text, OutputFormat::Text, 1)->RangeMultiplier(4)->Range(1, 1024);

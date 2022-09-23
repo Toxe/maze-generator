@@ -16,5 +16,5 @@ int main(int argc, const char* argv[])
     if (cli.info())
         maze_generator::maze::show_info(*maze, cli.output_format(), cli.zoom());
 
-    maze_generator::maze::output(*maze, cli.output_format(), cli.zoom(), *output_writer);
+    output_writer->output_maze(*maze, cli.zoom());
 }
