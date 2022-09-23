@@ -18,8 +18,8 @@ public:
     virtual void output_info(const maze::Maze& maze, int zoom);
 
 protected:
-    void write(const char c);
-    void write(const unsigned char c);
+    void write(char c);
+    void write(unsigned char c);
     void write(const char* s);
 
 private:
