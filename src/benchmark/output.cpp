@@ -1,7 +1,7 @@
 #include "benchmark/benchmark.h"
 
 #include "../maze_generator/maze/generate.hpp"
-#include "../maze_generator/maze/output.hpp"
+#include "../maze_generator/output_writer/output_writer.hpp"
 
 namespace maze_generator {
 

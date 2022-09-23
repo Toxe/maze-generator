@@ -15,22 +15,12 @@ public:
     virtual ~OutputWriter() = default;
 
     virtual void output_maze(maze::Maze& maze, int zoom) = 0;
+    virtual void output_info(const maze::Maze& maze, int zoom);
 
 protected:
-    void write(const char c)
-    {
-        out_ << c;
-    }
-
-    void write(const unsigned char c)
-    {
-        out_ << c;
-    }
-
-    void write(const char* s)
-    {
-        out_ << s;
-    }
+    void write(const char c);
+    void write(const unsigned char c);
+    void write(const char* s);
 
 private:
     std::ostream out_;

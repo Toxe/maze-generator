@@ -9,8 +9,6 @@ add_library(LIB_maze_generator
         maze/generate.hpp
         maze/maze.cpp
         maze/maze.hpp
-        maze/output.cpp
-        maze/output.hpp
         output_target/output_target.cpp
         output_target/output_target.hpp
         output_target/targets/console_output_target.hpp
@@ -18,9 +16,13 @@ add_library(LIB_maze_generator
         output_target/targets/null_output_target.hpp
         output_writer/output_writer.cpp
         output_writer/output_writer.hpp
+        output_writer/writers/data_output_writer.cpp
         output_writer/writers/data_output_writer.hpp
+        output_writer/writers/pretty_output_writer.cpp
         output_writer/writers/pretty_output_writer.hpp
+        output_writer/writers/raw_output_writer.cpp
         output_writer/writers/raw_output_writer.hpp
+        output_writer/writers/text_output_writer.cpp
         output_writer/writers/text_output_writer.hpp
         )
 
