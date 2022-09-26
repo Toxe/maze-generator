@@ -2,6 +2,7 @@
 if (BUILD_TESTING)
     add_executable(maze_generator_tests
             ../maze_generator/command_line/command_line.test.cpp
+            ../maze_generator/maze/node.test.cpp
             ../maze_generator/output_target/output_target.test.cpp
             ../maze_generator/output_writer/output_writer.test.cpp
             )

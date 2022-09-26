@@ -40,7 +40,7 @@ public:
     [[nodiscard]] constexpr bool visited() const { return (node_ & 0b10000) == 0b10000; }
     constexpr void set_visited() { node_ |= 0b10000; }
 
-    [[nodiscard]] uint8_t value() const { return node_; }
+    [[nodiscard]] constexpr uint8_t value() const { return node_ & 0b1111; }
 
 private:
     uint8_t node_;
