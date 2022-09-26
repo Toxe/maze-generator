@@ -9,44 +9,21 @@ namespace maze_generator::maze {
 
 class Maze {
 public:
-    Maze(const Size size, const int seed = -1)
-        : size_{size},
-          nodes_(static_cast<std::size_t>(size_.width * size_.height), Node::with_all_walls()),
-          random_device_(),
-          random_generator_(random_device_()),
-          random_dist_{0, 23}
-    {
-        seed_ = (seed >= 0) ? static_cast<std::random_device::result_type>(seed) : random_device_();
-        random_generator_.seed(seed_);
-    }
+    Maze(Size size, int seed);
 
     [[nodiscard]] Size size() const { return size_; }
+    [[nodiscard]] std::random_device::result_type seed() const { return seed_; }
 
-    bool valid_coords(const Coords coords) const { return coords.x >= 0 && coords.y >= 0 && coords.x < size_.width && coords.y < size_.height; }
+    [[nodiscard]] bool valid_coords(Coords coords) const;
+    [[nodiscard]] Coords coords_in_direction(Coords coords, Direction dir);
+    [[nodiscard]] const Direction* random_directions();
 
-    Coords coords_in_direction(const Coords coords, const Direction dir)
-    {
-        const Coords offset{direction_coords_offset_[static_cast<int>(dir)]};
-        return Coords{coords.x + offset.x, coords.y + offset.y};
-    }
+    [[nodiscard]] Node& node(Coords coords);
 
-    const Direction* random_directions() { return all_possible_random_directions[random_dist_(random_generator_)]; }
-
-    Node& node(const Coords coords) { return nodes_[static_cast<std::size_t>(coords.y * size_.width + coords.x)]; }
-
-    void clear_walls(const Coords orig, const Coords dest, Direction dir)
-    {
-        const Wall orig_wall = wall_in_direction_[static_cast<int>(dir)];
-        const Wall dest_wall = wall_in_direction_[static_cast<int>(opposite_direction_[static_cast<int>(dir)])];
-
-        node(orig).clear_wall(orig_wall);
-        node(dest).clear_wall(dest_wall);
-    }
-
-    std::random_device::result_type seed() const { return seed_; }
+    void clear_walls(Coords orig, Coords dest, Direction dir);
 
 private:
-    const Size size_;
+    Size size_;
     std::vector<Node> nodes_;
 
     std::random_device random_device_;
