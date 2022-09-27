@@ -3,8 +3,6 @@
 #include "catch2/catch_test_macros.hpp"
 #include "catch2/generators/catch_generators.hpp"
 
-#include "../output_target/output_target.hpp"
-#include "../output_writer/output_writer.hpp"
 #include "generate.hpp"
 #include "maze.hpp"
 
