@@ -12,9 +12,11 @@ add_library(LIB_maze_generator
         maze/node.hpp
         output_target/output_target.cpp
         output_target/output_target.hpp
+        output_target/targets/byte_output_target.hpp
         output_target/targets/console_output_target.hpp
         output_target/targets/file_output_target.hpp
         output_target/targets/null_output_target.hpp
+        output_target/targets/string_output_target.hpp
         output_writer/output_writer.cpp
         output_writer/output_writer.hpp
         output_writer/writers/data_output_writer.cpp
