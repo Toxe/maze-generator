@@ -24,8 +24,8 @@ struct Size {
 struct Coords {
     int x, y;
 
-    Coords(int point_x, int point_y) : x{point_x}, y{point_y} { }
-    Coords(size_t point_x, size_t point_y) : x{static_cast<int>(point_x)}, y{static_cast<int>(point_y)} { }
+    constexpr Coords(int point_x, int point_y) : x{point_x}, y{point_y} { }
+    constexpr Coords(size_t point_x, size_t point_y) : x{static_cast<int>(point_x)}, y{static_cast<int>(point_y)} { }
 };
 
 enum class Direction {

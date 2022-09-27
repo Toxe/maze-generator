@@ -31,7 +31,7 @@ std::unique_ptr<maze_generator::maze::Maze> generate(const Size size, const int 
                 const auto dir = current_node.check_directions[current_node.rnd_idx];
                 ++current_node.rnd_idx;
 
-                Coords next_coords{maze->coords_in_direction(current_node.coords, dir)};
+                const Coords next_coords{maze->coords_in_direction(current_node.coords, dir)};
 
                 if (maze->valid_coords(next_coords) && !maze->node(next_coords).visited()) {
                     maze->clear_walls(current_node.coords, next_coords, dir);
