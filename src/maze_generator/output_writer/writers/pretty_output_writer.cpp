@@ -48,20 +48,20 @@ void maze_generator::output_writer::PrettyOutputWriter::output_maze(maze::Maze& 
         for (int x = 0; x < grid_width; ++x) {
             switch (grid[static_cast<std::size_t>(y)][static_cast<std::size_t>(x)].value()) {
                 case 0b0000: write(reinterpret_cast<const char*>(u8"  ")); break;  // |  |
-                case 0b0001: write(reinterpret_cast<const char*>(u8"\u2575 ")); break;  // |╵ |
-                case 0b0010: write(reinterpret_cast<const char*>(u8" \u2500")); break;  // | ─|
-                case 0b0011: write(reinterpret_cast<const char*>(u8"\u2514\u2500")); break;  // |└─|
-                case 0b0100: write(reinterpret_cast<const char*>(u8"\u2577 ")); break;  // |╷ |
-                case 0b0101: write(reinterpret_cast<const char*>(u8"\u2502 ")); break;  // |│ |
+                case 0b0001: write(reinterpret_cast<const char*>(u8"\u2500 ")); break;  // |─ |
+                case 0b0010: write(reinterpret_cast<const char*>(u8"\u2577 ")); break;  // |╷ |
+                case 0b0011: write(reinterpret_cast<const char*>(u8"\u2510 ")); break;  // |┐ |
+                case 0b0100: write(reinterpret_cast<const char*>(u8" \u2500")); break;  // | ─|
+                case 0b0101: write(reinterpret_cast<const char*>(u8"\u2500\u2500")); break;  // |──|
                 case 0b0110: write(reinterpret_cast<const char*>(u8"\u250c\u2500")); break;  // |┌─|
-                case 0b0111: write(reinterpret_cast<const char*>(u8"\u251C\u2500")); break;  // |├─|
-                case 0b1000: write(reinterpret_cast<const char*>(u8"\u2500 ")); break;  // |─ |
+                case 0b0111: write(reinterpret_cast<const char*>(u8"\u252C\u2500")); break;  // |┬─|
+                case 0b1000: write(reinterpret_cast<const char*>(u8"\u2575 ")); break;  // |╵ |
                 case 0b1001: write(reinterpret_cast<const char*>(u8"\u2518 ")); break;  // |┘ |
-                case 0b1010: write(reinterpret_cast<const char*>(u8"\u2500\u2500")); break;  // |──|
-                case 0b1011: write(reinterpret_cast<const char*>(u8"\u2534\u2500")); break;  // |┴─|
-                case 0b1100: write(reinterpret_cast<const char*>(u8"\u2510 ")); break;  // |┐ |
-                case 0b1101: write(reinterpret_cast<const char*>(u8"\u2524 ")); break;  // |┤ |
-                case 0b1110: write(reinterpret_cast<const char*>(u8"\u252C\u2500")); break;  // |┬─|
+                case 0b1010: write(reinterpret_cast<const char*>(u8"\u2502 ")); break;  // |│ |
+                case 0b1011: write(reinterpret_cast<const char*>(u8"\u2524 ")); break;  // |┤ |
+                case 0b1100: write(reinterpret_cast<const char*>(u8"\u2514\u2500")); break;  // |└─|
+                case 0b1101: write(reinterpret_cast<const char*>(u8"\u2534\u2500")); break;  // |┴─|
+                case 0b1110: write(reinterpret_cast<const char*>(u8"\u251C\u2500")); break;  // |├─|
                 case 0b1111: write(reinterpret_cast<const char*>(u8"\u253C\u2500")); break;  // |┼─|
             }
         }
