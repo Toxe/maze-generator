@@ -27,33 +27,69 @@ Node& Maze::node(Coords coords)
 
 Coords Maze::coords_in_direction(const Coords coords, const Direction dir) const
 {
-    const Coords offset{direction_coords_offset_[static_cast<int>(dir)]};
+    constexpr std::array direction_coord_offsets{Coords{0, -1}, Coords{1, 0}, Coords{0, 1}, Coords{-1, 0}};
+
+    assert(static_cast<std::size_t>(dir) >= 0);
+    assert(static_cast<std::size_t>(dir) < direction_coord_offsets.size());
+
+    const Coords& offset{direction_coord_offsets[static_cast<std::size_t>(dir)]};
     return Coords{coords.x + offset.x, coords.y + offset.y};
 }
 
 Wall Maze::wall_in_direction(const Direction dir) const
 {
-    constexpr Wall walls[4] = {Wall::North, Wall::East, Wall::South, Wall::West};
+    constexpr std::array walls{Wall::North, Wall::East, Wall::South, Wall::West};
 
-    assert(static_cast<int>(dir) >= 0);
-    assert(static_cast<int>(dir) < 4);
+    assert(static_cast<std::size_t>(dir) >= 0);
+    assert(static_cast<std::size_t>(dir) < walls.size());
 
-    return walls[static_cast<int>(dir)];
+    return walls[static_cast<std::size_t>(dir)];
 }
 
 Direction Maze::opposite_direction(const Direction dir) const
 {
-    constexpr Direction directions[4] = {Direction::South, Direction::West, Direction::North, Direction::East};
+    constexpr std::array directions{Direction::South, Direction::West, Direction::North, Direction::East};
 
-    assert(static_cast<int>(dir) >= 0);
-    assert(static_cast<int>(dir) < 4);
+    assert(static_cast<std::size_t>(dir) >= 0);
+    assert(static_cast<std::size_t>(dir) < directions.size());
 
-    return directions[static_cast<int>(dir)];
+    return directions[static_cast<std::size_t>(dir)];
 }
 
-const Direction* Maze::random_directions()
+const std::array<Direction, 4>& Maze::random_directions()
 {
-    return all_possible_random_directions[random_dist_(random_generator_)];
+    static constexpr std::array all_possible_random_directions{
+        std::array<Direction, 4>{Direction::North, Direction::East, Direction::South, Direction::West},
+        std::array<Direction, 4>{Direction::North, Direction::East, Direction::West, Direction::South},
+        std::array<Direction, 4>{Direction::North, Direction::South, Direction::East, Direction::West},
+        std::array<Direction, 4>{Direction::North, Direction::South, Direction::West, Direction::East},
+        std::array<Direction, 4>{Direction::North, Direction::West, Direction::East, Direction::South},
+        std::array<Direction, 4>{Direction::North, Direction::West, Direction::South, Direction::East},
+        std::array<Direction, 4>{Direction::East, Direction::North, Direction::South, Direction::West},
+        std::array<Direction, 4>{Direction::East, Direction::North, Direction::West, Direction::South},
+        std::array<Direction, 4>{Direction::East, Direction::South, Direction::North, Direction::West},
+        std::array<Direction, 4>{Direction::East, Direction::South, Direction::West, Direction::North},
+        std::array<Direction, 4>{Direction::East, Direction::West, Direction::North, Direction::South},
+        std::array<Direction, 4>{Direction::East, Direction::West, Direction::South, Direction::North},
+        std::array<Direction, 4>{Direction::South, Direction::North, Direction::East, Direction::West},
+        std::array<Direction, 4>{Direction::South, Direction::North, Direction::West, Direction::East},
+        std::array<Direction, 4>{Direction::South, Direction::East, Direction::North, Direction::West},
+        std::array<Direction, 4>{Direction::South, Direction::East, Direction::West, Direction::North},
+        std::array<Direction, 4>{Direction::South, Direction::West, Direction::North, Direction::East},
+        std::array<Direction, 4>{Direction::South, Direction::West, Direction::East, Direction::North},
+        std::array<Direction, 4>{Direction::West, Direction::North, Direction::East, Direction::South},
+        std::array<Direction, 4>{Direction::West, Direction::North, Direction::South, Direction::East},
+        std::array<Direction, 4>{Direction::West, Direction::East, Direction::North, Direction::South},
+        std::array<Direction, 4>{Direction::West, Direction::East, Direction::South, Direction::North},
+        std::array<Direction, 4>{Direction::West, Direction::South, Direction::North, Direction::East},
+        std::array<Direction, 4>{Direction::West, Direction::South, Direction::East, Direction::North}};
+
+    const auto idx = random_dist_(random_generator_);
+
+    assert(static_cast<std::size_t>(idx) >= 0);
+    assert(static_cast<std::size_t>(idx) < all_possible_random_directions.size());
+
+    return all_possible_random_directions[static_cast<std::size_t>(idx)];
 }
 
 void Maze::clear_walls(const Coords orig, const Coords dest, Direction dir)

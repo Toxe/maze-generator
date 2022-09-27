@@ -6,10 +6,10 @@ namespace maze_generator::maze {
 
 struct StackNode {
     const Coords coords;
-    const Direction* check_directions;
+    const std::array<Direction, 4>& check_directions;
     int rnd_idx;
 
-    StackNode(const Coords c, const Direction* d) : coords{c}, check_directions{d}, rnd_idx{0} { }
+    StackNode(const Coords c, const std::array<Direction, 4>& d) : coords{c}, check_directions{d}, rnd_idx{0} { }
 };
 
 std::unique_ptr<maze_generator::maze::Maze> generate(const Size size, const int random_seed, const Coords starting_point)
