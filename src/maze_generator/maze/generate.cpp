@@ -33,12 +33,16 @@ std::unique_ptr<maze_generator::maze::Maze> generate(const Size size, const int 
 
                 const Coords next_coords{maze->coords_in_direction(current_node.coords, dir)};
 
-                if (maze->valid_coords(next_coords) && !maze->node(next_coords).visited()) {
-                    maze->clear_walls(current_node.coords, next_coords, dir);
-                    maze->node(next_coords).set_visited();
+                if (maze->valid_coords(next_coords)) {
+                    auto& next_node = maze->node(next_coords);
 
-                    stack.emplace_back(next_coords, maze->random_directions());
-                    keep_checking = false;
+                    if (!next_node.visited()) {
+                        maze->clear_walls(current_node.coords, next_coords, dir);
+                        next_node.set_visited();
+
+                        stack.emplace_back(next_coords, maze->random_directions());
+                        keep_checking = false;
+                    }
                 }
             }
         } else {
