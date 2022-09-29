@@ -23,7 +23,7 @@ Node& Maze::node(Coords coords)
     return nodes_[static_cast<std::size_t>(coords.y * size_.width + coords.x)];
 }
 
-Coords Maze::coords_in_direction(const Coords coords, const Direction dir) const
+Coords Maze::coords_in_direction(const Coords coords, const Direction dir)
 {
     constexpr std::array direction_coord_offsets{Coords{0, -1}, Coords{1, 0}, Coords{0, 1}, Coords{-1, 0}};
 
@@ -31,14 +31,14 @@ Coords Maze::coords_in_direction(const Coords coords, const Direction dir) const
     return Coords{coords.x + offset.x, coords.y + offset.y};
 }
 
-Wall Maze::wall_in_direction(const Direction dir) const
+Wall Maze::wall_in_direction(const Direction dir)
 {
     constexpr std::array walls{Wall::North, Wall::East, Wall::South, Wall::West};
 
     return walls[static_cast<std::size_t>(dir)];
 }
 
-Direction Maze::opposite_direction(const Direction dir) const
+Direction Maze::opposite_direction(const Direction dir)
 {
     constexpr std::array directions{Direction::South, Direction::West, Direction::North, Direction::East};
 

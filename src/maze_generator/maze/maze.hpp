@@ -17,9 +17,9 @@ public:
 
     [[nodiscard]] Node& node(Coords coords);
 
-    [[nodiscard]] Coords coords_in_direction(Coords coords, Direction dir) const;
-    [[nodiscard]] Wall wall_in_direction(Direction dir) const;
-    [[nodiscard]] Direction opposite_direction(Direction dir) const;
+    [[nodiscard]] static Coords coords_in_direction(Coords coords, Direction dir);
+    [[nodiscard]] static Wall wall_in_direction(Direction dir);
+    [[nodiscard]] static Direction opposite_direction(Direction dir);
 
     [[nodiscard]] const std::array<Direction, 4>& random_directions();
     [[nodiscard]] std::random_device::result_type seed() const { return seed_; }
