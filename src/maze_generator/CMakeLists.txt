@@ -5,8 +5,6 @@ add_library(LIB_maze_generator
         include/types.hpp
         logger/logger.cpp
         logger/logger.hpp
-        maze/generate.cpp
-        maze/generate.hpp
         maze/maze.cpp
         maze/maze.hpp
         maze/node.hpp

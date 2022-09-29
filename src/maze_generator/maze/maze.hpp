@@ -10,7 +10,7 @@ namespace maze_generator::maze {
 
 class Maze {
 public:
-    Maze(Size size, int seed);
+    Maze(Size size, int seed, Coords starting_point);
 
     [[nodiscard]] Size size() const { return size_; }
     [[nodiscard]] bool valid_coords(Coords coords) const;
@@ -27,6 +27,8 @@ public:
     void clear_walls(Coords orig, Coords dest, Direction dir);
 
 private:
+    void generate(Coords starting_point);
+
     Size size_;
     std::vector<Node> nodes_;
 

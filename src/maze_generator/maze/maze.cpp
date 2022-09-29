@@ -4,7 +4,7 @@
 
 namespace maze_generator::maze {
 
-Maze::Maze(const Size size, const int seed)
+Maze::Maze(const Size size, const int seed, Coords starting_point)
     : size_{size},
       nodes_(static_cast<std::size_t>(size_.width * size_.height), Node::with_all_walls()),
       random_device_(),
@@ -12,7 +12,7 @@ Maze::Maze(const Size size, const int seed)
       random_generator_(random_device_()),
       random_dist_{0, 23}
 {
-    random_generator_.seed(seed_);
+    generate(starting_point);
 }
 
 bool Maze::valid_coords(const Coords coords) const
@@ -99,6 +99,53 @@ void Maze::clear_walls(const Coords orig, const Coords dest, Direction dir)
 
     node(orig).clear_wall(orig_wall);
     node(dest).clear_wall(dest_wall);
+}
+
+struct StackNode {
+    const Coords coords;
+    const std::array<Direction, 4>& check_directions;
+    std::size_t rnd_idx = 0;
+
+    StackNode(const Coords c, const std::array<Direction, 4>& d) : coords{c}, check_directions{d} { }
+};
+
+void Maze::generate(const Coords starting_point)
+{
+    std::vector<StackNode> stack;
+
+    random_generator_.seed(seed_);
+
+    node(starting_point).set_visited();
+    stack.emplace_back(starting_point, random_directions());
+
+    while (!stack.empty()) {
+        StackNode& current_node = stack.back();
+
+        if (current_node.rnd_idx < 4) {
+            bool keep_checking = true;
+
+            while (keep_checking && current_node.rnd_idx < 4) {
+                const auto dir = current_node.check_directions[current_node.rnd_idx];
+                ++current_node.rnd_idx;
+
+                const Coords next_coords{coords_in_direction(current_node.coords, dir)};
+
+                if (valid_coords(next_coords)) {
+                    auto& next_node = node(next_coords);
+
+                    if (!next_node.visited()) {
+                        clear_walls(current_node.coords, next_coords, dir);
+                        next_node.set_visited();
+
+                        stack.emplace_back(next_coords, random_directions());
+                        keep_checking = false;
+                    }
+                }
+            }
+        } else {
+            stack.pop_back();
+        }
+    }
 }
 
 }  // namespace maze_generator::maze
