@@ -6,19 +6,19 @@ void TextOutputWriter::output_maze(maze::Maze& maze, int)
 {
     const auto size = maze.size();
 
-    for (int y = 0; y < size.height; ++y) {
-        for (int x = 0; x < size.width; ++x)
-            write(maze.node({x, y}).has_wall(Wall::North) ? "##" : "# ");
+    for (int row = 0; row < size.height; ++row) {
+        for (int col = 0; col < size.width; ++col)
+            write(maze.node({col, row}).has_wall(Wall::North) ? "##" : "# ");
 
         write("#\n");
 
-        for (int x = 0; x < size.width; ++x)
-            write(maze.node({x, y}).has_wall(Wall::West) ? "# " : "  ");
+        for (int col = 0; col < size.width; ++col)
+            write(maze.node({col, row}).has_wall(Wall::West) ? "# " : "  ");
 
         write("#\n");
     }
 
-    for (int x = 0; x < size.width; ++x)
+    for (int col = 0; col < size.width; ++col)
         write("##");
 
     write("#\n");

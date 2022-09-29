@@ -11,10 +11,10 @@ void RawOutputWriter::output_maze(maze::Maze& maze, int zoom)
     const unsigned char black = 0x00;
     const unsigned char white = 0xff;
 
-    for (int y = 0; y < size.height; ++y) {
+    for (int row = 0; row < size.height; ++row) {
         for (int r = 0; r < zoom; ++r) {
-            for (int x = 0; x < size.width; ++x) {
-                if (maze.node({x, y}).has_wall(Wall::North)) {
+            for (int col = 0; col < size.width; ++col) {
+                if (maze.node({col, row}).has_wall(Wall::North)) {
                     for (int z = 0; z < zoom; ++z) {
                         write(white);
                         write(white);
@@ -33,8 +33,8 @@ void RawOutputWriter::output_maze(maze::Maze& maze, int zoom)
         }
 
         for (int r = 0; r < zoom; ++r) {
-            for (int x = 0; x < size.width; ++x) {
-                if (maze.node({x, y}).has_wall(Wall::West)) {
+            for (int col = 0; col < size.width; ++col) {
+                if (maze.node({col, row}).has_wall(Wall::West)) {
                     for (int z = 0; z < zoom; ++z)
                         write(white);
 
