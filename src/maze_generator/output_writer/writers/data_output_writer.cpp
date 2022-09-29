@@ -1,6 +1,8 @@
 #include "data_output_writer.hpp"
 
-void maze_generator::output_writer::DataOutputWriter::output_maze(maze::Maze& maze, int)
+namespace maze_generator::output_writer {
+
+void DataOutputWriter::output_maze(maze::Maze& maze, int)
 {
     const auto size = maze.size();
 
@@ -18,3 +20,5 @@ void maze_generator::output_writer::DataOutputWriter::output_maze(maze::Maze& ma
         write('\n');
     }
 }
+
+}  // namespace maze_generator::output_writer

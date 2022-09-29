@@ -2,7 +2,9 @@
 
 #include <iostream>
 
-void maze_generator::output_writer::RawOutputWriter::output_maze(maze::Maze& maze, int zoom)
+namespace maze_generator::output_writer {
+
+void RawOutputWriter::output_maze(maze::Maze& maze, int zoom)
 {
     const auto size = maze.size();
 
@@ -73,3 +75,5 @@ void maze_generator::output_writer::RawOutputWriter::output_info(const maze::Maz
     std::cout << "image height: " << (zoom * (2 * size.height + 1)) << '\n';
     std::cout << "image format: 1 byte per pixel, grayscale\n";
 }
+
+}  // namespace maze_generator::output_writer
