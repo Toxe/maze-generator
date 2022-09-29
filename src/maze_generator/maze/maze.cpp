@@ -76,13 +76,13 @@ const std::array<Direction, 4>& Maze::random_directions()
     return all_possible_random_directions[static_cast<std::size_t>(random_dist_(random_generator_))];
 }
 
-void Maze::clear_walls(const Coords orig, const Coords dest, Direction dir)
+void Maze::clear_walls(const Coords from, const Coords to, Direction dir)
 {
     const Wall orig_wall = wall_in_direction(dir);
     const Wall dest_wall = wall_in_direction(opposite_direction(dir));
 
-    node(orig).clear_wall(orig_wall);
-    node(dest).clear_wall(dest_wall);
+    node(from).clear_wall(orig_wall);
+    node(to).clear_wall(dest_wall);
 }
 
 struct StackNode {

@@ -24,7 +24,7 @@ public:
     [[nodiscard]] const std::array<Direction, 4>& random_directions();
     [[nodiscard]] std::random_device::result_type seed() const { return seed_; }
 
-    void clear_walls(Coords orig, Coords dest, Direction dir);
+    void clear_walls(Coords from, Coords to, Direction dir);
 
 private:
     void generate(Coords starting_point);
