@@ -40,6 +40,8 @@ std::unique_ptr<OutputWriter> create_output_writer(output_target::OutputTarget& 
         case OutputFormat::Raw: return std::make_unique<RawOutputWriter>(output_stream);
         case OutputFormat::Pretty: return std::make_unique<PrettyOutputWriter>(output_stream);
         case OutputFormat::Data: return std::make_unique<DataOutputWriter>(output_stream);
+        default:
+            return nullptr;
     }
 }
 
