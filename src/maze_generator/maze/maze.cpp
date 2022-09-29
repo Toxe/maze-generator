@@ -1,5 +1,3 @@
-#include <cassert>
-
 #include "maze.hpp"
 
 namespace maze_generator::maze {
@@ -29,9 +27,6 @@ Coords Maze::coords_in_direction(const Coords coords, const Direction dir) const
 {
     constexpr std::array direction_coord_offsets{Coords{0, -1}, Coords{1, 0}, Coords{0, 1}, Coords{-1, 0}};
 
-    assert(static_cast<std::size_t>(dir) >= 0);
-    assert(static_cast<std::size_t>(dir) < direction_coord_offsets.size());
-
     const Coords& offset{direction_coord_offsets[static_cast<std::size_t>(dir)]};
     return Coords{coords.x + offset.x, coords.y + offset.y};
 }
@@ -40,18 +35,12 @@ Wall Maze::wall_in_direction(const Direction dir) const
 {
     constexpr std::array walls{Wall::North, Wall::East, Wall::South, Wall::West};
 
-    assert(static_cast<std::size_t>(dir) >= 0);
-    assert(static_cast<std::size_t>(dir) < walls.size());
-
     return walls[static_cast<std::size_t>(dir)];
 }
 
 Direction Maze::opposite_direction(const Direction dir) const
 {
     constexpr std::array directions{Direction::South, Direction::West, Direction::North, Direction::East};
-
-    assert(static_cast<std::size_t>(dir) >= 0);
-    assert(static_cast<std::size_t>(dir) < directions.size());
 
     return directions[static_cast<std::size_t>(dir)];
 }
@@ -84,12 +73,7 @@ const std::array<Direction, 4>& Maze::random_directions()
         std::array<Direction, 4>{Direction::West, Direction::South, Direction::North, Direction::East},
         std::array<Direction, 4>{Direction::West, Direction::South, Direction::East, Direction::North}};
 
-    const auto idx = random_dist_(random_generator_);
-
-    assert(static_cast<std::size_t>(idx) >= 0);
-    assert(static_cast<std::size_t>(idx) < all_possible_random_directions.size());
-
-    return all_possible_random_directions[static_cast<std::size_t>(idx)];
+    return all_possible_random_directions[static_cast<std::size_t>(random_dist_(random_generator_))];
 }
 
 void Maze::clear_walls(const Coords orig, const Coords dest, Direction dir)
