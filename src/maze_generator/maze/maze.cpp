@@ -2,7 +2,7 @@
 
 namespace maze_generator::maze {
 
-Maze::Maze(const Size size, const int seed, Coords starting_point)
+Maze::Maze(const Size size, const int seed, const Coords& starting_point)
     : size_{size},
       nodes_(static_cast<std::size_t>(size_.width * size_.height), Node::with_all_walls()),
       seed_((seed >= 0) ? static_cast<std::random_device::result_type>(seed) : random_device_()),
@@ -12,17 +12,17 @@ Maze::Maze(const Size size, const int seed, Coords starting_point)
     generate(starting_point);
 }
 
-bool Maze::valid_coords(const Coords coords) const
+bool Maze::valid_coords(const Coords& coords) const
 {
     return coords.x >= 0 && coords.y >= 0 && coords.x < size_.width && coords.y < size_.height;
 }
 
-Node& Maze::node(Coords coords)
+Node& Maze::node(const Coords& coords)
 {
     return nodes_[static_cast<std::size_t>(coords.y * size_.width + coords.x)];
 }
 
-Coords Maze::coords_in_direction(const Coords coords, const Direction dir)
+Coords Maze::coords_in_direction(const Coords& coords, const Direction dir)
 {
     constexpr std::array direction_coord_offsets{Coords{0, -1}, Coords{1, 0}, Coords{0, 1}, Coords{-1, 0}};
 
@@ -75,7 +75,7 @@ const std::array<Direction, 4>& Maze::random_directions()
     return all_possible_random_directions[static_cast<std::size_t>(random_dist_(random_generator_))];
 }
 
-void Maze::clear_walls(const Coords from, const Coords to, Direction dir)
+void Maze::clear_walls(const Coords& from, const Coords& to, Direction dir)
 {
     const Wall orig_wall = wall_in_direction(dir);
     const Wall dest_wall = wall_in_direction(opposite_direction(dir));
@@ -86,20 +86,20 @@ void Maze::clear_walls(const Coords from, const Coords to, Direction dir)
 
 class StackNode {
 public:
-    StackNode(Coords coords, const std::array<Direction, 4>& dir) : coords_{coords}, check_directions_{dir} { }
+    StackNode(const Coords coords, const std::array<Direction, 4>& dir) : coords_{coords}, check_directions_{dir} { }
 
-    [[nodiscard]] Coords coords() const { return coords_; }
+    [[nodiscard]] const Coords& coords() const { return coords_; }
     [[nodiscard]] bool has_checked_all_directions() const { return idx_ >= 4; }
 
     [[nodiscard]] Direction next_direction() { return check_directions_[idx_++]; }
 
 private:
     Coords coords_;
-    std::size_t idx_ = 0;
     const std::array<Direction, 4>& check_directions_;
+    std::size_t idx_ = 0;
 };
 
-void Maze::generate(const Coords starting_point)
+void Maze::generate(const Coords& starting_point)
 {
     std::vector<StackNode> stack;
 
