@@ -20,12 +20,12 @@ void OutputWriter::output_info(const maze::Maze& maze, const int)
 
 void OutputWriter::write(const char c)
 {
-    out_ << c;
+    out_.put(c);
 }
 
 void OutputWriter::write(const unsigned char c)
 {
-    out_ << c;
+    out_.put(static_cast<std::ostream::char_type>(c));
 }
 
 void OutputWriter::write(const char* s)
