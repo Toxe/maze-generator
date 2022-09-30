@@ -8,10 +8,12 @@ void DataOutputWriter::output_maze(maze::Maze& maze, int)
 
     for (int row = 0; row < size.height; ++row) {
         for (int col = 0; col < size.width; ++col) {
-            write(maze.node({col, row}).has_wall(Wall::North) ? 'N' : '-');
-            write(maze.node({col, row}).has_wall(Wall::East) ? 'E' : '-');
-            write(maze.node({col, row}).has_wall(Wall::South) ? 'S' : '-');
-            write(maze.node({col, row}).has_wall(Wall::West) ? 'W' : '-');
+            const maze::Node& node = maze.node({col, row});
+
+            write(node.has_wall(Wall::North) ? 'N' : '-');
+            write(node.has_wall(Wall::East) ? 'E' : '-');
+            write(node.has_wall(Wall::South) ? 'S' : '-');
+            write(node.has_wall(Wall::West) ? 'W' : '-');
 
             if (col < size.width - 1)
                 write('|');
