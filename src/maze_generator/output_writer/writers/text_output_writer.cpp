@@ -18,10 +18,8 @@ void TextOutputWriter::output_maze(maze::Maze& maze, int)
         write("#\n");
     }
 
-    for (int col = 0; col < size.width; ++col)
-        write("##");
-
-    write("#\n");
+    write('#', size.width * 2 + 1);
+    write('\n');
 }
 
 }  // namespace maze_generator::output_writer

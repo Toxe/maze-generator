@@ -19,7 +19,9 @@ public:
 
 protected:
     void write(char c);
+    void write(char c, int repeat);
     void write(unsigned char c);
+    void write(unsigned char c, int repeat);
     void write(const char* s);
 
 private:

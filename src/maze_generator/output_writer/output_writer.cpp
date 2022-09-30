@@ -23,9 +23,21 @@ void OutputWriter::write(const char c)
     out_.put(c);
 }
 
+void OutputWriter::write(const char c, int repeat)
+{
+    for (int i = 0; i < repeat; ++i)
+        out_.put(c);
+}
+
 void OutputWriter::write(const unsigned char c)
 {
     out_.put(static_cast<std::ostream::char_type>(c));
+}
+
+void OutputWriter::write(const unsigned char c, const int repeat)
+{
+    for (int i = 0; i < repeat; ++i)
+        out_.put(static_cast<char>(c));
 }
 
 void OutputWriter::write(const char* s)
