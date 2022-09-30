@@ -20,25 +20,27 @@ void PrettyOutputWriter::output_maze(maze::Maze& maze, int)
 
     for (std::size_t row = 0; row < static_cast<std::size_t>(size.height); ++row) {
         for (std::size_t col = 0; col < static_cast<std::size_t>(size.width); ++col) {
-            if (maze.node({col, row}).has_wall(Wall::North)) {
+            const maze::Node& node = maze.node({col, row});
+
+            if (node.has_wall(Wall::North)) {
                 grid[2 * row][2 * col].set_wall(Wall::East);
                 grid[2 * row][2 * col + 1].set_wall(Wall::East | Wall::West);
                 grid[2 * row][2 * col + 2].set_wall(Wall::West);
             }
 
-            if (maze.node({col, row}).has_wall(Wall::East)) {
+            if (node.has_wall(Wall::East)) {
                 grid[2 * row][2 * col + 2].set_wall(Wall::South);
                 grid[2 * row + 1][2 * col + 2].set_wall(Wall::North | Wall::South);
                 grid[2 * row + 2][2 * col + 2].set_wall(Wall::North);
             }
 
-            if (maze.node({col, row}).has_wall(Wall::South)) {
+            if (node.has_wall(Wall::South)) {
                 grid[2 * row + 2][2 * col].set_wall(Wall::East);
                 grid[2 * row + 2][2 * col + 1].set_wall(Wall::East | Wall::West);
                 grid[2 * row + 2][2 * col + 2].set_wall(Wall::West);
             }
 
-            if (maze.node({col, row}).has_wall(Wall::West)) {
+            if (node.has_wall(Wall::West)) {
                 grid[2 * row][2 * col].set_wall(Wall::South);
                 grid[2 * row + 1][2 * col].set_wall(Wall::North | Wall::South);
                 grid[2 * row + 2][2 * col].set_wall(Wall::North);
