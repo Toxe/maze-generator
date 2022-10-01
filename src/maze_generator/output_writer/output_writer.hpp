@@ -14,8 +14,8 @@ public:
     explicit OutputWriter(output_target::OutputTarget& output_stream) : out_(output_stream.streambuf()) { }
     virtual ~OutputWriter() = default;
 
-    virtual void output_maze(maze::Maze& maze, int zoom) = 0;
-    virtual void output_info(const maze::Maze& maze, int zoom);
+    virtual void output_maze(maze::Maze& maze) = 0;
+    virtual void output_info(const maze::Maze& maze);
 
 protected:
     void write(char c);
@@ -28,6 +28,6 @@ private:
     std::ostream out_;
 };
 
-[[nodiscard]] std::unique_ptr<OutputWriter> create_output_writer(output_target::OutputTarget& output_stream, OutputFormat output_format);
+[[nodiscard]] std::unique_ptr<OutputWriter> create_output_writer(output_target::OutputTarget& output_stream, OutputFormat output_format, int zoom);
 
 }  // namespace maze_generator::output_writer

@@ -4,7 +4,7 @@
 
 namespace maze_generator::output_writer {
 
-void PrettyOutputWriter::output_maze(maze::Maze& maze, int)
+void PrettyOutputWriter::output_maze(maze::Maze& maze)
 {
     const auto size = maze.size();
 

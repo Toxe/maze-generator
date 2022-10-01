@@ -9,7 +9,7 @@
 
 namespace maze_generator::output_writer {
 
-void OutputWriter::output_info(const maze::Maze& maze, const int)
+void OutputWriter::output_info(const maze::Maze& maze)
 {
     const auto size = maze.size();
 
@@ -45,11 +45,11 @@ void OutputWriter::write(const char* s)
     out_ << s;
 }
 
-std::unique_ptr<OutputWriter> create_output_writer(output_target::OutputTarget& output_stream, OutputFormat output_format)
+std::unique_ptr<OutputWriter> create_output_writer(output_target::OutputTarget& output_stream, OutputFormat output_format, int zoom)
 {
     switch (output_format) {
         case OutputFormat::Text: return std::make_unique<TextOutputWriter>(output_stream);
-        case OutputFormat::Raw: return std::make_unique<RawOutputWriter>(output_stream);
+        case OutputFormat::Raw: return std::make_unique<RawOutputWriter>(output_stream, zoom);
         case OutputFormat::Pretty: return std::make_unique<PrettyOutputWriter>(output_stream);
         case OutputFormat::Data: return std::make_unique<DataOutputWriter>(output_stream);
         default:

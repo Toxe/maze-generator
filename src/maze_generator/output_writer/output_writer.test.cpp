@@ -28,8 +28,8 @@ TEST_CASE("output_writer::OutputWriter")
                                       "###########\n";
 
         auto output_target = maze_generator::output_target::create_string_output_target();
-        auto output_writer = maze_generator::output_writer::create_output_writer(*output_target, OutputFormat::Text);
-        output_writer->output_maze(maze, 1);
+        auto output_writer = maze_generator::output_writer::create_output_writer(*output_target, OutputFormat::Text, 1);
+        output_writer->output_maze(maze);
 
         CHECK(output_target->str() == expected_output);
     }
@@ -43,8 +43,8 @@ TEST_CASE("output_writer::OutputWriter")
                                       "--SW|-ES-|N-SW|N-S-|-ES-\n";
 
         auto output_target = maze_generator::output_target::create_string_output_target();
-        auto output_writer = maze_generator::output_writer::create_output_writer(*output_target, OutputFormat::Data);
-        output_writer->output_maze(maze, 1);
+        auto output_writer = maze_generator::output_writer::create_output_writer(*output_target, OutputFormat::Data, 1);
+        output_writer->output_maze(maze);
 
         CHECK(output_target->str() == expected_output);
     }
@@ -64,8 +64,8 @@ TEST_CASE("output_writer::OutputWriter")
                                       "└───────┴───────────┘ \n";
 
         auto output_target = maze_generator::output_target::create_string_output_target();
-        auto output_writer = maze_generator::output_writer::create_output_writer(*output_target, OutputFormat::Pretty);
-        output_writer->output_maze(maze, 1);
+        auto output_writer = maze_generator::output_writer::create_output_writer(*output_target, OutputFormat::Pretty, 1);
+        output_writer->output_maze(maze);
 
         CHECK(output_target->str() == expected_output);
     }
@@ -86,8 +86,8 @@ TEST_CASE("output_writer::OutputWriter")
             0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
 
         auto output_target = maze_generator::output_target::create_byte_output_target();
-        auto output_writer = maze_generator::output_writer::create_output_writer(*output_target, OutputFormat::Raw);
-        output_writer->output_maze(maze, 1);
+        auto output_writer = maze_generator::output_writer::create_output_writer(*output_target, OutputFormat::Raw, 1);
+        output_writer->output_maze(maze);
 
         CHECK(output_target->data() == expected_output);
     }

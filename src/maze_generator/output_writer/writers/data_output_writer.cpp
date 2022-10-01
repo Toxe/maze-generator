@@ -2,7 +2,7 @@
 
 namespace maze_generator::output_writer {
 
-void DataOutputWriter::output_maze(maze::Maze& maze, int)
+void DataOutputWriter::output_maze(maze::Maze& maze)
 {
     const auto size = maze.size();
 
