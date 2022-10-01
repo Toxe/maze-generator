@@ -20,6 +20,54 @@ It supports four different output formats:
 - CMake
 - Vcpkg
 
+## Build
+
+Example build instructions for CMake and Vcpkg. These examples assume that Vcpkg is installed in your home directory.
+Adjust the paths if necessary.
+
+This will build three binaries: The main binary, tests and benchmarks.
+
+#### Vcpkg toolchain
+
+Pass the Vcpkg toolchain file via `CMAKE_TOOLCHAIN_FILE`.
+
+- Windows: `-DCMAKE_TOOLCHAIN_FILE=%HOMEPATH%\vcpkg\scripts\buildsystems\vcpkg.cmake`
+- Unix systems: `-DCMAKE_TOOLCHAIN_FILE=$HOME/vcpkg/scripts/buildsystems/vcpkg.cmake`
+
+### Linux & Mac
+
+```
+$ mkdir build
+$ cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=$HOME/vcpkg/scripts/buildsystems/vcpkg.cmake -B build
+$ cmake --build build
+```
+
+```
+$ ls -l build/src/*/{maze_generator,maze_generator_tests,maze_generator_benchmark}
+
+-rwxr-xr-x 1 toxe toxe 525K Oct  1 12:35 build/src/benchmark/maze_generator_benchmark*
+-rwxr-xr-x 1 toxe toxe 900K Oct  1 12:35 build/src/maze_generator/maze_generator*
+-rwxr-xr-x 1 toxe toxe 2.0M Oct  1 12:35 build/src/tests/maze_generator_tests*
+```
+
+### Windows
+
+```
+PS> mkdir build
+PS> cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE="$HOME\vcpkg\scripts\buildsystems\vcpkg.cmake" -B build
+PS> cmake --build build --config Release
+```
+
+```
+PS> dir .\build\src\*\Release\*.exe | Select-Object -Property Length,Directory,Name
+
+Length Directory                                                                        Name
+------ ---------                                                                        ----
+239104 C:\Users\toxe\Programmierung\C++\maze-generator\build\src\benchmark\Release      maze_generator_benchmark.exe
+317440 C:\Users\toxe\Programmierung\C++\maze-generator\build\src\maze_generator\Release maze_generator.exe
+783872 C:\Users\toxe\Programmierung\C++\maze-generator\build\src\tests\Release          maze_generator_tests.exe
+```
+
 ## Usage
 
 ```
