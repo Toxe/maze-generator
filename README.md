@@ -235,3 +235,70 @@ NE-W|-E-W|-E-W|NE-W|-E-W|--SW|N-S-|NE--|-E-W|-E-W
 N--W|N-S-|NES-|--SW|NE--|-E-W|---W|N-S-|-ES-|-E-W
 --SW|N-S-|N-S-|N-S-|--S-|-ES-|--SW|N-S-|N-S-|-ES-
 ```
+
+## Tests
+
+```
+$ ./build/src/tests/maze_generator_tests
+```
+
+```
+===============================================================================
+All tests passed (140 assertions in 5 test cases)
+```
+
+## Benchmarks
+
+```
+$ ./build/src/benchmark/maze_generator_benchmark
+```
+
+```
+2022-10-01T11:15:27+02:00
+Running ./build/src/benchmark/maze_generator_benchmark
+Run on (24 X 4000 MHz CPU s)
+CPU Caches:
+  L1 Data 32 KiB (x12)
+  L1 Instruction 32 KiB (x12)
+  L2 Unified 512 KiB (x12)
+  L3 Unified 16384 KiB (x4)
+---------------------------------------------------------------------
+Benchmark                           Time             CPU   Iterations
+---------------------------------------------------------------------
+BM_generate/1                    2562 ns         2567 ns       280000
+BM_generate/4                    3371 ns         3369 ns       213333
+BM_generate/16                  10181 ns        10010 ns        64000
+BM_generate/64                 175431 ns       171611 ns         3733
+BM_generate/256               2901936 ns      2913136 ns          236
+BM_generate/1024             43803913 ns     43945312 ns           16
+BM_output/text/1                  349 ns          353 ns      2036364
+BM_output/text/4                 2435 ns         2459 ns       298667
+BM_output/text/16               30261 ns        30483 ns        23579
+BM_output/text/64              444755 ns       444984 ns         1545
+BM_output/text/256            6979298 ns      6975446 ns          112
+BM_output/text/1024         111385550 ns    111979167 ns            6
+BM_output/pretty/1                909 ns          921 ns       746667
+BM_output/pretty/4               5605 ns         5580 ns       112000
+BM_output/pretty/16             66586 ns        66267 ns         8960
+BM_output/pretty/64            994260 ns      1004016 ns          747
+BM_output/pretty/256         15833876 ns     15972222 ns           45
+BM_output/pretty/1024       250759500 ns    250000000 ns            3
+BM_output/data/1                  183 ns          181 ns      3446154
+BM_output/data/4                 3134 ns         3139 ns       224000
+BM_output/data/16               50482 ns        50223 ns        11200
+BM_output/data/64              805500 ns       819615 ns          896
+BM_output/data/256           12270432 ns     12276786 ns           56
+BM_output/data/1024         205647633 ns    208333333 ns            3
+BM_output/raw_zoom_1/1            334 ns          337 ns      2133333
+BM_output/raw_zoom_1/4           3147 ns         3139 ns       224000
+BM_output/raw_zoom_1/16         42062 ns        42969 ns        16000
+BM_output/raw_zoom_1/64        632386 ns       641741 ns         1120
+BM_output/raw_zoom_1/256     10011679 ns     10000000 ns           75
+BM_output/raw_zoom_1/1024   158342375 ns    160156250 ns            4
+BM_output/raw_zoom_10/1         27594 ns        27867 ns        26353
+BM_output/raw_zoom_10/4        272927 ns       272770 ns         2635
+BM_output/raw_zoom_10/16      3715943 ns      3676471 ns          187
+BM_output/raw_zoom_10/64     57058827 ns     56818182 ns           11
+BM_output/raw_zoom_10/256   906239900 ns    906250000 ns            1
+BM_output/raw_zoom_10/1024 14755845700 ns   14750000000 ns            1
+```
