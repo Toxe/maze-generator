@@ -34,7 +34,8 @@ public:
 
     constexpr void clear_wall(const Wall wall)
     {
-        node_ &= ~(static_cast<uint8_t>(wall));
+        const uint8_t bits = ~static_cast<uint8_t>(wall);
+        node_ &= bits;
     }
 
     [[nodiscard]] constexpr bool visited() const { return (node_ & 0b10000) == 0b10000; }
