@@ -11,14 +11,12 @@ void PrettyOutputWriter::output_maze(maze::Maze& maze, int)
     // create grid with wall data
     const std::size_t grid_width = 2 * static_cast<std::size_t>(size.width) + 1;
     const std::size_t grid_height = 2 * static_cast<std::size_t>(size.height) + 1;
-    std::vector<std::vector<maze::Node>> grid(grid_height);
 
-    for (std::size_t row = 0; row < grid_height; ++row) {
-        grid[row].reserve(grid_width);
+    std::vector<std::vector<maze::Node>> grid;
+    grid.reserve(grid_height);
 
-        for (std::size_t col = 0; col < grid_width; ++col)
-            grid[row].push_back(maze::Node{});
-    }
+    for (std::size_t row = 0; row < grid_height; ++row)
+        grid.push_back(std::vector<maze::Node>(grid_width, maze::Node{}));
 
     for (std::size_t row = 0; row < static_cast<std::size_t>(size.height); ++row) {
         for (std::size_t col = 0; col < static_cast<std::size_t>(size.width); ++col) {
