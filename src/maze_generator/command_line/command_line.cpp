@@ -20,7 +20,7 @@ namespace maze_generator::command_line {
     std::exit(error ? app.exit(error.value()) : 0);
 }
 
-CommandLine::CommandLine(int argc, const char* argv[])
+CommandLine::CommandLine(std::span<const char*> args)
 {
     const char* description = "Maze Generator";
     int log_level_flag = 0;
@@ -45,7 +45,7 @@ CommandLine::CommandLine(int argc, const char* argv[])
     grp_output->add_flag("-r,--raw", format_raw, "raw: generate a 1 byte per pixel grayscale raw image")->excludes(flag1, flag2, flag3);
 
     try {
-        app.parse(argc, argv);
+        app.parse(static_cast<int>(args.size()), args.data());
     } catch (const CLI::ParseError& error) {
         show_usage_and_exit(app, nullptr, error);
     }

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <span>
 #include <string>
 
 #include "types.hpp"
@@ -8,7 +9,7 @@ namespace maze_generator::command_line {
 
 class CommandLine {
 public:
-    CommandLine(int argc, const char* argv[]);
+    explicit CommandLine(std::span<const char*> args);
 
     [[nodiscard]] int seed() const { return seed_; }
     [[nodiscard]] int zoom() const { return zoom_; }

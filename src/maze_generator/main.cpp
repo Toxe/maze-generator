@@ -5,7 +5,7 @@
 
 int main(int argc, const char* argv[])
 {
-    const maze_generator::command_line::CommandLine cli(argc, argv);
+    const maze_generator::command_line::CommandLine cli({argv, static_cast<std::size_t>(argc)});
 
     maze_generator::maze::Maze maze(cli.size(), cli.seed(), {0, 0});
 

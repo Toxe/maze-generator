@@ -11,7 +11,7 @@ TEST_CASE("command_line::CommandLine")
     SECTION("default width and height is 10/10")
     {
         auto args = std::to_array({"maze_generator"});
-        const CommandLine cli(static_cast<int>(args.size()), args.data());
+        const CommandLine cli(args);
 
         CHECK(cli.size().width == 10);
         CHECK(cli.size().height == 10);
@@ -20,7 +20,7 @@ TEST_CASE("command_line::CommandLine")
     SECTION("can set width and height")
     {
         auto args = std::to_array({"maze_generator", "20", "30"});
-        const CommandLine cli(static_cast<int>(args.size()), args.data());
+        const CommandLine cli(args);
 
         CHECK(cli.size().width == 20);
         CHECK(cli.size().height == 30);
@@ -29,7 +29,7 @@ TEST_CASE("command_line::CommandLine")
     SECTION("can set filename")
     {
         auto args = std::to_array({"maze_generator", "10", "10", "output.raw"});
-        const CommandLine cli(static_cast<int>(args.size()), args.data());
+        const CommandLine cli(args);
 
         CHECK(cli.filename() == args[3]);
     }
@@ -37,7 +37,7 @@ TEST_CASE("command_line::CommandLine")
     SECTION("default zoom is 1")
     {
         auto args = std::to_array({"maze_generator"});
-        const CommandLine cli(static_cast<int>(args.size()), args.data());
+        const CommandLine cli(args);
 
         CHECK(cli.zoom() == 1);
     }
@@ -45,7 +45,7 @@ TEST_CASE("command_line::CommandLine")
     SECTION("can set zoom with -z")
     {
         auto args = std::to_array({"maze_generator", "-z", "3"});
-        const CommandLine cli(static_cast<int>(args.size()), args.data());
+        const CommandLine cli(args);
 
         CHECK(cli.zoom() == 3);
     }
@@ -53,7 +53,7 @@ TEST_CASE("command_line::CommandLine")
     SECTION("can set zoom with --zoom")
     {
         auto args = std::to_array({"maze_generator", "--zoom", "3"});
-        const CommandLine cli(static_cast<int>(args.size()), args.data());
+        const CommandLine cli(args);
 
         CHECK(cli.zoom() == 3);
     }
@@ -61,7 +61,7 @@ TEST_CASE("command_line::CommandLine")
     SECTION("can set seed with -s")
     {
         auto args = std::to_array({"maze_generator", "-s", "5"});
-        const CommandLine cli(static_cast<int>(args.size()), args.data());
+        const CommandLine cli(args);
 
         CHECK(cli.seed() == 5);
     }
@@ -69,7 +69,7 @@ TEST_CASE("command_line::CommandLine")
     SECTION("can set seed with --seed")
     {
         auto args = std::to_array({"maze_generator", "--seed", "5"});
-        const CommandLine cli(static_cast<int>(args.size()), args.data());
+        const CommandLine cli(args);
 
         CHECK(cli.seed() == 5);
     }
@@ -77,7 +77,7 @@ TEST_CASE("command_line::CommandLine")
     SECTION("default info flag is false")
     {
         auto args = std::to_array({"maze_generator"});
-        const CommandLine cli(static_cast<int>(args.size()), args.data());
+        const CommandLine cli(args);
 
         CHECK(cli.info() == false);
     }
@@ -85,7 +85,7 @@ TEST_CASE("command_line::CommandLine")
     SECTION("can show info with -i")
     {
         auto args = std::to_array({"maze_generator", "-i"});
-        const CommandLine cli(static_cast<int>(args.size()), args.data());
+        const CommandLine cli(args);
 
         CHECK(cli.info() == true);
     }
@@ -93,7 +93,7 @@ TEST_CASE("command_line::CommandLine")
     SECTION("can show info with --info")
     {
         auto args = std::to_array({"maze_generator", "--info"});
-        const CommandLine cli(static_cast<int>(args.size()), args.data());
+        const CommandLine cli(args);
 
         CHECK(cli.info() == true);
     }
@@ -101,7 +101,7 @@ TEST_CASE("command_line::CommandLine")
     SECTION("default output format is text")
     {
         auto args = std::to_array({"maze_generator"});
-        const CommandLine cli(static_cast<int>(args.size()), args.data());
+        const CommandLine cli(args);
 
         CHECK(cli.output_format() == OutputFormat::Text);
     }
@@ -109,7 +109,7 @@ TEST_CASE("command_line::CommandLine")
     SECTION("can change output format to text with -t")
     {
         auto args = std::to_array({"maze_generator", "-t"});
-        const CommandLine cli(static_cast<int>(args.size()), args.data());
+        const CommandLine cli(args);
 
         CHECK(cli.output_format() == OutputFormat::Text);
     }
@@ -117,7 +117,7 @@ TEST_CASE("command_line::CommandLine")
     SECTION("can change output format to text with --text")
     {
         auto args = std::to_array({"maze_generator", "--text"});
-        const CommandLine cli(static_cast<int>(args.size()), args.data());
+        const CommandLine cli(args);
 
         CHECK(cli.output_format() == OutputFormat::Text);
     }
@@ -125,7 +125,7 @@ TEST_CASE("command_line::CommandLine")
     SECTION("can change output format to raw with -r")
     {
         auto args = std::to_array({"maze_generator", "-r"});
-        const CommandLine cli(static_cast<int>(args.size()), args.data());
+        const CommandLine cli(args);
 
         CHECK(cli.output_format() == OutputFormat::Raw);
     }
@@ -133,7 +133,7 @@ TEST_CASE("command_line::CommandLine")
     SECTION("can change output format to raw with --raw")
     {
         auto args = std::to_array({"maze_generator", "--raw"});
-        const CommandLine cli(static_cast<int>(args.size()), args.data());
+        const CommandLine cli(args);
 
         CHECK(cli.output_format() == OutputFormat::Raw);
     }
@@ -141,7 +141,7 @@ TEST_CASE("command_line::CommandLine")
     SECTION("can change output format to pretty with -p")
     {
         auto args = std::to_array({"maze_generator", "-p"});
-        const CommandLine cli(static_cast<int>(args.size()), args.data());
+        const CommandLine cli(args);
 
         CHECK(cli.output_format() == OutputFormat::Pretty);
     }
@@ -149,7 +149,7 @@ TEST_CASE("command_line::CommandLine")
     SECTION("can change output format to pretty with --pretty")
     {
         auto args = std::to_array({"maze_generator", "--pretty"});
-        const CommandLine cli(static_cast<int>(args.size()), args.data());
+        const CommandLine cli(args);
 
         CHECK(cli.output_format() == OutputFormat::Pretty);
     }
@@ -157,7 +157,7 @@ TEST_CASE("command_line::CommandLine")
     SECTION("can change output format to data with -d")
     {
         auto args = std::to_array({"maze_generator", "-d"});
-        const CommandLine cli(static_cast<int>(args.size()), args.data());
+        const CommandLine cli(args);
 
         CHECK(cli.output_format() == OutputFormat::Data);
     }
@@ -165,7 +165,7 @@ TEST_CASE("command_line::CommandLine")
     SECTION("can change output format to data with --data")
     {
         auto args = std::to_array({"maze_generator", "--data"});
-        const CommandLine cli(static_cast<int>(args.size()), args.data());
+        const CommandLine cli(args);
 
         CHECK(cli.output_format() == OutputFormat::Data);
     }
