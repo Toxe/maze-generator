@@ -1,6 +1,5 @@
 # Define default compiler options for Clang, GCC and MSVC.
 
-# shared options between Clang, Clang-cl and GCC
 # Clang specific options
 set(DEFAULT_CLANG_OPTIONS
         -fcolor-diagnostics
@@ -16,7 +15,7 @@ set(DEFAULT_MSVC_OPTIONS
         /permissive-
 )
 
-# Clang-cl specific options (Clang + MSVC)
+# Clang-cl specific options
 set(DEFAULT_CLANG_CL_OPTIONS
         ${DEFAULT_MSVC_OPTIONS}
         /EHsc  # enable exception handling
