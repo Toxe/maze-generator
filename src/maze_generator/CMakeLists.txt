@@ -29,14 +29,16 @@ add_library(LIB_maze_generator
 
 set_target_properties(LIB_maze_generator PROPERTIES CXX_EXTENSIONS OFF)
 target_compile_features(LIB_maze_generator PUBLIC cxx_std_20)
-target_compile_options(LIB_maze_generator PRIVATE ${SANITIZER_FLAGS} ${DEFAULT_COMPILER_OPTIONS} ${DEFAULT_COMPILER_WARNINGS})
+target_compile_options(LIB_maze_generator PRIVATE ${SANITIZER_COMPILE_OPTIONS} ${DEFAULT_COMPILER_OPTIONS} ${DEFAULT_COMPILER_WARNINGS})
+target_link_options(LIB_maze_generator PRIVATE ${SANITIZER_LINK_OPTIONS})
+target_link_libraries(LIB_maze_generator PRIVATE ${SANITIZER_LINK_LIBRARIES} CLI11::CLI11 fmt::fmt spdlog::spdlog)
 target_include_directories(LIB_maze_generator PUBLIC include)
-target_link_libraries(LIB_maze_generator PRIVATE ${SANITIZER_FLAGS} CLI11::CLI11 fmt::fmt spdlog::spdlog)
 
 # executable
 add_executable(maze_generator main.cpp)
 
 set_target_properties(maze_generator PROPERTIES CXX_EXTENSIONS OFF)
 target_compile_features(maze_generator PUBLIC cxx_std_20)
-target_compile_options(maze_generator PRIVATE ${SANITIZER_FLAGS} ${DEFAULT_COMPILER_OPTIONS} ${DEFAULT_COMPILER_WARNINGS})
-target_link_libraries(maze_generator PRIVATE ${SANITIZER_FLAGS} LIB_maze_generator)
+target_compile_options(maze_generator PRIVATE ${SANITIZER_COMPILE_OPTIONS} ${DEFAULT_COMPILER_OPTIONS} ${DEFAULT_COMPILER_WARNINGS})
+target_link_options(maze_generator PRIVATE ${SANITIZER_LINK_OPTIONS})
+target_link_libraries(maze_generator PRIVATE ${SANITIZER_LINK_LIBRARIES} LIB_maze_generator)
